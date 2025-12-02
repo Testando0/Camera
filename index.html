@@ -3,476 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Câmera com Filtros</title>
+    <title>✨ Calculadora de Alma Gêmea ✨</title>
     <style>
-        /* --- ESTILOS GERAIS --- */
+        /* --- ESTILOS TIKTOK / NEON --- */
+        :root {
+            --dark-bg: #111;
+            --neon-pink: #ff3366;
+            --neon-blue: #33ccff;
+            --font-main: 'Arial', sans-serif;
+        }
+        
         body {
+            background-color: var(--dark-bg);
+            color: #fff;
+            font-family: var(--font-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             margin: 0;
-            padding: 0;
-            background-color: #000;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden; /* Evita rolagem */
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
+            padding: 20px;
+            text-align: center;
         }
 
-        /* --- VÍDEO E CANVAS --- */
-        .camera-container {
-            position: relative;
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #111;
-            overflow: hidden;
-        }
-
-        video {
+        .container {
             width: 100%;
-            height: 100%;
-            object-fit: cover; /* Preenche a tela como o Instagram */
-            transform: scaleX(-1); /* Espelha a câmera frontal */
-            transition: filter 0.3s ease;
+            max-width: 450px;
+            padding: 30px 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            background: #1e1e1e;
         }
 
-        /* Canvas escondido usado apenas para processar a captura */
-        canvas {
-            display: none;
+        h1 {
+            color: var(--neon-pink);
+            font-size: 2.5em;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px var(--neon-pink), 0 0 20px rgba(255, 51, 102, 0.5);
         }
 
-        /* --- UI E CONTROLES --- */
-        .ui-layer {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding-bottom: 30px;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            z-index: 10;
+        p.subtitle {
+            font-size: 1.1em;
+            color: #bbb;
+            margin-bottom: 30px;
         }
 
-        /* Barra de rolagem de filtros */
-        .filters-scroll {
-            display: flex;
-            overflow-x: auto;
-            gap: 15px;
-            padding: 10px 20px;
-            width: 100%;
-            box-sizing: border-box;
-            scrollbar-width: none; /* Firefox */
+        /* --- INPUTS E BOTÃO --- */
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
         }
-        .filters-scroll::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
 
-        .filter-btn {
-            min-width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            background-size: cover;
-            cursor: pointer;
-            opacity: 0.7;
-            transition: transform 0.2s, opacity 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 10px;
-            text-shadow: 1px 1px 2px black;
+        label {
+            display: block;
+            margin-bottom: 8px;
             font-weight: bold;
+            color: var(--neon-blue);
         }
 
-        .filter-btn:hover, .filter-btn.active {
-            transform: scale(1.1);
-            opacity: 1;
-            border-color: #e1306c; /* Cor do Instagram */
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 2px solid var(--neon-blue);
+            border-radius: 8px;
+            background-color: #333;
+            color: #fff;
+            font-size: 1em;
+            transition: border-color 0.3s;
         }
 
-        /* Botão de Captura */
-        .shutter-btn {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background-color: white;
-            border: 4px solid rgba(255,255,255,0.3);
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 8px var(--neon-pink);
+        }
+
+        button {
+            background-color: var(--neon-pink);
+            color: #111;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: bold;
             cursor: pointer;
-            transition: transform 0.1s;
+            transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
         }
 
-        .shutter-btn:active {
-            transform: scale(0.9);
-            background-color: #ddd;
+        button:hover {
+            background-color: #ff6699;
+            box-shadow: 0 4px 20px var(--neon-pink);
+        }
+        
+        button:active {
+            transform: scale(0.98);
         }
 
-        /* Animação de Flash */
-        .flash {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
+        /* --- ÁREA DE RESULTADO --- */
+        #result-area {
+            margin-top: 30px;
+            border-top: 2px dashed #444;
+            padding-top: 30px;
             opacity: 0;
-            pointer-events: none;
-            z-index: 20;
-        }
-        .flash.animate {
-            animation: flashAnim 0.3s ease-out;
+            transition: opacity 1s ease-in-out;
         }
 
-        @keyframes flashAnim {
-            0% { opacity: 1; }
-            100% { opacity: 0; }
+        #result-area.show {
+            opacity: 1;
         }
 
-        /* --- CLASSES DOS FILTROS (CSS) --- */
-        /* Estas classes afetam o preview do vídeo */
-        .normal { filter: none; }
-        .pb { filter: grayscale(100%); }
-        .sepia { filter: sepia(0.8) contrast(1.2); }
-        .vibrante { filter: saturate(200%) contrast(110%); }
-        .retro { filter: hue-rotate(-20deg) contrast(0.9) brightness(1.1); }
-        .invertido { filter: invert(100%); }
-        .blur { filter: blur(2px); }
+        #compatibility-score {
+            font-size: 4em;
+            font-weight: bold;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue), 0 0 30px rgba(51, 204, 255, 0.7);
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        #result-text {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            color: var(--neon-pink);
+        }
+
+        #result-message {
+            font-style: italic;
+            color: #ccc;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.05); opacity: 1; }
+        }
 
     </style>
 </head>
 <body>
 
-    <div class="camera-container">
-        <video id="video" autoplay playsinline></video>
-        <div id="flash" class="flash"></div>
-        
-        <div class="ui-layer">
-            <div class="filters-scroll">
-                <div class="filter-btn active" onclick="setFilter('normal', '')" style="background-color: #333;">Normal</div>
-                <div class="filter-btn" onclick="setFilter('pb', 'grayscale(100%)')" style="background-color: #555;">P&B</div>
-                <div class="filter-btn" onclick="setFilter('sepia', 'sepia(0.8) contrast(1.2)')" style="background-color: #cca;">Sépia</div>
-                <div class="filter-btn" onclick="setFilter('vibrante', 'saturate(200%) contrast(110%)')" style="background-color: #f55;">Vibrante</div>
-                <div class="filter-btn" onclick="setFilter('retro', 'hue-rotate(-20deg) contrast(0.9) brightness(1.1)')" style="background-color: #58a;">Retrô</div>
-                <div class="filter-btn" onclick="setFilter('invertido', 'invert(100%)')" style="background-color: #000;">Invert</div>
-            </div>
+    <div class="container">
+        <h1>💖 Teste da Alma Gêmea 💖</h1>
+        <p class="subtitle">Descubra sua compatibilidade mística com apenas dois nomes.</p>
 
-            <button class="shutter-btn" onclick="takePhoto()"></button>
+        <div class="input-group">
+            <label for="name1">Seu Nome:</label>
+            <input type="text" id="name1" placeholder="Ex: Maria" required>
         </div>
+
+        <div class="input-group">
+            <label for="name2">Nome da Alma Gêmea:</label>
+            <input type="text" id="name2" placeholder="Ex: João" required>
+        </div>
+
+        <button onclick="calculate()">CALCULAR VIBRAÇÃO</button>
+
+        <div id="result-area">
+            <p id="compatibility-score"></p>
+            <p id="result-text"></p>
+            <p id="result-message"></p>
+        </div>
+
     </div>
 
-    <canvas id="canvas"></canvas>
-
     <script>
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const flash = document.getElementById('flash');
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        
-        let currentFilterString = 'none'; // Armazena o valor do filtro para o Canvas
+        // 1. O ALGORITMO MÁGICO (Deterministic Hashing)
+        // Esta função cria uma pontuação entre 0 e 100 baseada nos nomes.
+        // É determinística: os mesmos nomes sempre dão o mesmo resultado,
+        // o que é divertido para o usuário!
+        function calculateCompatibility(name1, name2) {
+            // Limpa, remove espaços e coloca em minúsculas
+            const cleanName1 = name1.toLowerCase().replace(/\s/g, '');
+            const cleanName2 = name2.toLowerCase().replace(/\s/g, '');
 
-        // 1. Inicializar a Câmera
-        async function startCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { 
-                        facingMode: "user", // "environment" para câmera traseira
-                        width: { ideal: 1920 },
-                        height: { ideal: 1080 }
-                    }, 
-                    audio: false 
-                });
-                video.srcObject = stream;
-            } catch (err) {
-                alert("Erro ao acessar a câmera: " + err);
-                console.error(err);
-            }
-        }
-
-        // 2. Função para aplicar filtros
-        function setFilter(className, filterString) {
-            // Atualiza visual do vídeo
-            video.className = className;
+            // Concatena e ordena (para que "João & Maria" seja o mesmo que "Maria & João")
+            const combined = cleanName1 > cleanName2 ? cleanName1 + cleanName2 : cleanName2 + cleanName1;
             
-            // Atualiza variável para usar na captura (Canvas)
-            currentFilterString = filterString || 'none';
-
-            // Atualiza UI dos botões
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-        }
-
-        // 3. Tirar Foto e Salvar
-        function takePhoto() {
-            // Efeito de Flash
-            flash.classList.add('animate');
-            setTimeout(() => flash.classList.remove('animate'), 500);
-
-            // Configurar Canvas com o tamanho do vídeo
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const ctx = canvas.getContext('2d');
-
-            // Espelhar horizontalmente (se for câmera frontal, para ficar igual ao preview)
-            ctx.translate(canvas.width, 0);
-            ctx.scale(-1, 1);
-
-            // APLICAR O FILTRO NO CONTEXTO DO CANVAS
-            // Isso garante que a foto salva tenha o mesmo filtro do vídeo
-            ctx.filter = currentFilterString;
-
-            // Desenhar o vídeo no canvas
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            // Criar link de download
-            const dataURL = canvas.toDataURL('image/png');
-            const link = document.createElement('a');
-            link.href = dataURL;
-            link.download = `foto_insta_${Date.now()}.png`;
-            link.click();
-        }
-
-        // Iniciar
-        window.addEventListener('load', startCamera);
-    </script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Câmera com Filtros</title>
-    <style>
-        /* --- ESTILOS GERAIS --- */
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #000;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden; /* Evita rolagem */
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        /* --- VÍDEO E CANVAS --- */
-        .camera-container {
-            position: relative;
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #111;
-            overflow: hidden;
-        }
-
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Preenche a tela como o Instagram */
-            transform: scaleX(-1); /* Espelha a câmera frontal */
-            transition: filter 0.3s ease;
-        }
-
-        /* Canvas escondido usado apenas para processar a captura */
-        canvas {
-            display: none;
-        }
-
-        /* --- UI E CONTROLES --- */
-        .ui-layer {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding-bottom: 30px;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            z-index: 10;
-        }
-
-        /* Barra de rolagem de filtros */
-        .filters-scroll {
-            display: flex;
-            overflow-x: auto;
-            gap: 15px;
-            padding: 10px 20px;
-            width: 100%;
-            box-sizing: border-box;
-            scrollbar-width: none; /* Firefox */
-        }
-        .filters-scroll::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
-
-        .filter-btn {
-            min-width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            background-size: cover;
-            cursor: pointer;
-            opacity: 0.7;
-            transition: transform 0.2s, opacity 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 10px;
-            text-shadow: 1px 1px 2px black;
-            font-weight: bold;
-        }
-
-        .filter-btn:hover, .filter-btn.active {
-            transform: scale(1.1);
-            opacity: 1;
-            border-color: #e1306c; /* Cor do Instagram */
-        }
-
-        /* Botão de Captura */
-        .shutter-btn {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background-color: white;
-            border: 4px solid rgba(255,255,255,0.3);
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-
-        .shutter-btn:active {
-            transform: scale(0.9);
-            background-color: #ddd;
-        }
-
-        /* Animação de Flash */
-        .flash {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 20;
-        }
-        .flash.animate {
-            animation: flashAnim 0.3s ease-out;
-        }
-
-        @keyframes flashAnim {
-            0% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        /* --- CLASSES DOS FILTROS (CSS) --- */
-        /* Estas classes afetam o preview do vídeo */
-        .normal { filter: none; }
-        .pb { filter: grayscale(100%); }
-        .sepia { filter: sepia(0.8) contrast(1.2); }
-        .vibrante { filter: saturate(200%) contrast(110%); }
-        .retro { filter: hue-rotate(-20deg) contrast(0.9) brightness(1.1); }
-        .invertido { filter: invert(100%); }
-        .blur { filter: blur(2px); }
-
-    </style>
-</head>
-<body>
-
-    <div class="camera-container">
-        <video id="video" autoplay playsinline></video>
-        <div id="flash" class="flash"></div>
-        
-        <div class="ui-layer">
-            <div class="filters-scroll">
-                <div class="filter-btn active" onclick="setFilter('normal', '')" style="background-color: #333;">Normal</div>
-                <div class="filter-btn" onclick="setFilter('pb', 'grayscale(100%)')" style="background-color: #555;">P&B</div>
-                <div class="filter-btn" onclick="setFilter('sepia', 'sepia(0.8) contrast(1.2)')" style="background-color: #cca;">Sépia</div>
-                <div class="filter-btn" onclick="setFilter('vibrante', 'saturate(200%) contrast(110%)')" style="background-color: #f55;">Vibrante</div>
-                <div class="filter-btn" onclick="setFilter('retro', 'hue-rotate(-20deg) contrast(0.9) brightness(1.1)')" style="background-color: #58a;">Retrô</div>
-                <div class="filter-btn" onclick="setFilter('invertido', 'invert(100%)')" style="background-color: #000;">Invert</div>
-            </div>
-
-            <button class="shutter-btn" onclick="takePhoto()"></button>
-        </div>
-    </div>
-
-    <canvas id="canvas"></canvas>
-
-    <script>
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const flash = document.getElementById('flash');
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        
-        let currentFilterString = 'none'; // Armazena o valor do filtro para o Canvas
-
-        // 1. Inicializar a Câmera
-        async function startCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { 
-                        facingMode: "user", // "environment" para câmera traseira
-                        width: { ideal: 1920 },
-                        height: { ideal: 1080 }
-                    }, 
-                    audio: false 
-                });
-                video.srcObject = stream;
-            } catch (err) {
-                alert("Erro ao acessar a câmera: " + err);
-                console.error(err);
+            let totalSum = 0;
+            for (let i = 0; i < combined.length; i++) {
+                // Soma os códigos Unicode do caractere
+                totalSum += combined.charCodeAt(i);
             }
-        }
 
-        // 2. Função para aplicar filtros
-        function setFilter(className, filterString) {
-            // Atualiza visual do vídeo
-            video.className = className;
+            // Garante um valor entre 0 e 99 (usando módulo 100)
+            let score = totalSum % 100;
             
-            // Atualiza variável para usar na captura (Canvas)
-            currentFilterString = filterString || 'none';
-
-            // Atualiza UI dos botões
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+            // Ajusta o score para garantir que nunca seja muito baixo (para ser divertido)
+            return score + 1; // Score de 1 a 100
         }
 
-        // 3. Tirar Foto e Salvar
-        function takePhoto() {
-            // Efeito de Flash
-            flash.classList.add('animate');
-            setTimeout(() => flash.classList.remove('animate'), 500);
+        // 2. FUNÇÃO PRINCIPAL DE CÁLCULO
+        function calculate() {
+            const name1 = document.getElementById('name1').value.trim();
+            const name2 = document.getElementById('name2').value.trim();
+            const resultArea = document.getElementById('result-area');
+            
+            if (!name1 || !name2) {
+                alert("Por favor, preencha os dois nomes!");
+                return;
+            }
 
-            // Configurar Canvas com o tamanho do vídeo
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const ctx = canvas.getContext('2d');
+            const score = calculateCompatibility(name1, name2);
 
-            // Espelhar horizontalmente (se for câmera frontal, para ficar igual ao preview)
-            ctx.translate(canvas.width, 0);
-            ctx.scale(-1, 1);
+            // Mapeia o Score para Mensagens (o segredo da trend!)
+            let resultText, resultMessage;
 
-            // APLICAR O FILTRO NO CONTEXTO DO CANVAS
-            // Isso garante que a foto salva tenha o mesmo filtro do vídeo
-            ctx.filter = currentFilterString;
+            if (score >= 95) {
+                resultText = "✨ ALMA GÊMEA ✨";
+                resultMessage = "Esta conexão é de outro planeta! Preparem-se para o final feliz.";
+            } else if (score >= 80) {
+                resultText = "❤️ Conexão Forte!";
+                resultMessage = "A vibração é alta! Vocês nasceram para se encontrar, invistam nesse potencial.";
+            } else if (score >= 60) {
+                resultText = "😊 Ótima Compatibilidade";
+                resultMessage = "Há muita química no ar. Com um pouco de esforço, o futuro é promissor!";
+            } else if (score >= 40) {
+                resultText = "🤝 Companheiros de Jornada";
+                resultMessage = "A amizade e o respeito são a base. Ótimos amigos ou uma conexão que precisa de tempo.";
+            } else {
+                resultText = "😂 Energia Desalinhada";
+                resultMessage = "É melhor rir e seguir a trend. Talvez o universo tenha outros planos... 🤷‍♀️";
+            }
 
-            // Desenhar o vídeo no canvas
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            // Exibe os Resultados
+            document.getElementById('compatibility-score').innerText = score + '%';
+            document.getElementById('result-text').innerText = resultText;
+            document.getElementById('result-message').innerText = resultMessage;
 
-            // Criar link de download
-            const dataURL = canvas.toDataURL('image/png');
-            const link = document.createElement('a');
-            link.href = dataURL;
-            link.download = `foto_insta_${Date.now()}.png`;
-            link.click();
+            // Animação para exibir a área de resultado
+            resultArea.classList.remove('show');
+            setTimeout(() => {
+                resultArea.classList.add('show');
+            }, 50);
         }
-
-        // Iniciar
-        window.addEventListener('load', startCamera);
     </script>
 </body>
 </html>
