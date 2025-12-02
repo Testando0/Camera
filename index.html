@@ -3,54 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acesso à Plataforma :: Interface Profissional</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>SISTEMA DE ACESSO CENTRALIZADO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* CSS Profissional Sóbrio */
+        /* Variáveis de Tema */
         :root {
-            --dark-bg: #f8f8f8; /* Fundo muito claro */
-            --card-bg: #ffffff; /* Card branco */
-            --primary-blue: #007bff; /* Azul primário padrão */
-            --text-dark: #333333; /* Texto escuro */
-            --text-muted: #6c757d; /* Texto secundário */
-            --error-red: #dc3545; /* Vermelho padrão de erro */
-            --border-color: #dee2e6;
+            --primary-bg: #121212; /* Fundo Preto Quase Absoluto */
+            --card-bg: #1e1e1e; /* Card Cinza Escuro */
+            --primary-red: #d32f2f; /* Vermelho Padrão de Erro/Alerta */
+            --text-light: #f5f5f5; /* Texto Branco Suave */
+            --text-muted: #aaaaaa; /* Texto Secundário */
+            --border-color: #333333;
         }
 
+        /* Base e Responsividade */
         body {
-            background-color: var(--dark-bg);
-            color: var(--text-dark);
+            background-color: var(--primary-bg);
+            color: var(--text-light);
             font-family: 'Inter', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
-            overflow: hidden;
+            overflow: auto; /* Permite scroll se o conteúdo for grande */
         }
 
         .login-panel {
-            width: 360px;
-            padding: 35px;
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
+            border-top: 4px solid var(--primary-red); /* Linha superior de destaque */
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             position: relative;
             z-index: 10;
+            margin: 20px; /* Margem em telas pequenas */
+        }
+        
+        /* Design Móvel (Aplica-se a todos os dispositivos, otimizado para celular) */
+        @media (max-width: 600px) {
+            .login-panel {
+                margin: 20px;
+                padding: 25px;
+            }
         }
 
         h1 {
             text-align: center;
-            font-weight: 600;
-            font-size: 1.6em;
-            color: var(--text-dark);
+            font-weight: 700;
+            font-size: 1.5em;
+            color: var(--text-light);
             margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
         }
 
+        /* Estilos de Formulário */
         .input-group {
             margin-bottom: 20px;
-            text-align: left;
         }
 
         .input-group label {
@@ -62,27 +75,27 @@
         }
 
         .input-group input {
-            width: calc(100% - 20px);
+            width: calc(100% - 22px);
             padding: 10px;
-            background: var(--dark-bg);
+            background: var(--primary-bg);
             border: 1px solid var(--border-color);
             border-radius: 4px;
-            color: var(--text-dark);
+            color: var(--text-light);
             font-size: 1em;
             outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: border-color 0.2s;
         }
 
         .input-group input:focus {
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 1px var(--primary-red);
         }
 
         button {
             width: 100%;
             padding: 12px;
             margin-top: 15px;
-            background: var(--primary-blue);
+            background: var(--primary-red);
             color: white;
             border: none;
             border-radius: 4px;
@@ -92,10 +105,10 @@
         }
 
         button:hover {
-            background: #0056b3; /* Tom de azul mais escuro */
+            background: #b71c1c; 
         }
 
-        /* Mensagem de Erro Profissional (Modal/Overlay) */
+        /* Mensagem de Erro (Modal Limpo) */
         #error-overlay {
             display: none;
             position: absolute;
@@ -103,45 +116,45 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.95); /* Fundo modal branco semi-transparente */
+            background: rgba(30, 30, 30, 0.95); /* Fundo modal escuro semi-transparente */
             text-align: center;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            padding: 20px;
+            padding: 25px;
             border-radius: 8px;
-            border: 2px solid var(--error-red);
             z-index: 20;
+            box-sizing: border-box; /* Inclui padding na altura total */
         }
         
         #error-overlay .error-icon {
             font-size: 3em;
-            color: var(--error-red);
+            color: var(--primary-red);
             margin-bottom: 15px;
         }
 
         #error-overlay .error-title {
-            font-size: 1.4em;
+            font-size: 1.3em;
             font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 10px;
+            color: var(--text-light);
+            margin-bottom: 15px;
         }
         
         #error-overlay p {
             font-size: 1em;
-            line-height: 1.5;
+            line-height: 1.6;
             color: var(--text-muted);
             margin-bottom: 5px;
         }
         
         #error-overlay .stolen-username {
-            font-size: 1.2em;
+            font-size: 1.1em;
             font-weight: 700;
-            color: var(--error-red);
-            margin-top: 15px;
+            color: var(--primary-red);
+            margin-top: 10px;
             padding: 5px 10px;
-            background: #fff3f3; /* Fundo suave para destaque */
+            background: rgba(211, 47, 47, 0.1); /* Fundo suave para o nome */
             border-radius: 4px;
         }
     </style>
@@ -149,30 +162,29 @@
 <body>
 
     <div class="login-panel">
-        <h1>LOGIN DO SISTEMA</h1>
+        <h1>PORTAL DE ACESSO SEGURO</h1>
         
         <form id="loginForm">
             <div class="input-group">
-                <label for="username">NOME DE USUÁRIO OU E-MAIL</label>
-                <input type="text" id="username" required placeholder="exemplo@dominio.com">
+                <label for="username">NOME DE USUÁRIO OU CHAVE DE ACESSO</label>
+                <input type="text" id="username" required placeholder="Digite sua credencial principal">
             </div>
             
             <div class="input-group">
-                <label for="password">SENHA</label>
-                <input type="password" id="password" required placeholder="Insira sua credencial">
+                <label for="password">SENHA DE AUTENTICAÇÃO</label>
+                <input type="password" id="password" required placeholder="Insira a chave de segurança">
             </div>
             
-            <button type="submit">Autenticar</button>
+            <button type="submit">VALIDAR CREDENCIAIS</button>
         </form>
 
         <div id="error-overlay" style="display: none;">
-            <div class="error-icon">❌</div>
-            <div class="error-title">FALHA DE AUTENTICAÇÃO: CONFLITO DE CHAVE</div>
-            <p>O sistema identificou que a chave (senha) inserida está vinculada a outra identidade.</p>
-            <p>Por motivos de **Segurança e Integridade de Dados**, esta chave não pode ser usada por você.</p>
-            <p style="margin-top: 15px;">**CHAVE VINCULADA AO USUÁRIO ORIGINAL:**</p>
+            <div class="error-icon">⚠️</div>
+            <div class="error-title">ERRO: CHAVE DE SEGURANÇA VINCULADA</div>
+            <p>O sistema rejeitou a autenticação. Por motivos de **Compliance e Segurança de Dados**, a chave (senha) inserida está registrada e protegida.</p>
+            <p style="margin-top: 15px;">Esta senha pertence exclusivamente ao usuário:</p>
             <p class="stolen-username">@luisgamex</p>
-            <p style="margin-top: 25px; font-size: 0.9em; color: var(--text-muted);">Por favor, utilize sua própria credencial ou redefina sua senha.</p>
+            <p style="margin-top: 25px; font-size: 0.9em; color: var(--text-muted);">Tente novamente com sua própria chave ou solicite a recuperação de senha.</p>
         </div>
     </div>
 
@@ -185,7 +197,7 @@
             const usernameInput = document.getElementById('username');
             const passwordInput = document.getElementById('password');
             
-            // Oculta o formulário e mostra o modal de erro profissional
+            // Oculta o formulário e mostra o modal de erro
             loginForm.style.display = 'none';
             errorOverlay.style.display = 'flex';
             
