@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acesso Centralizado - Plataforma S.A.</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>SISTEMA DE ACESSO CENTRALIZADO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* RESET ESSENCIAL */
         * {
@@ -13,21 +13,21 @@
             padding: 0;
         }
 
-        /* Variáveis de Tema */
+        /* Variáveis de Tema (Preto/Vermelho) */
         :root {
-            --bg-light: #f4f5f7; /* Fundo Muito Claro */
-            --card-white: #ffffff; /* Card Branco */
-            --text-dark: #212529; /* Preto de Texto */
-            --text-muted: #6c757d; /* Cinza de Detalhe */
-            --action-blue: #007bff; /* Azul Padrão de Ação */
-            --error-red: #c0392b; /* Vermelho Profissional Sóbrio */
-            --border-light: #dee2e6;
+            --primary-bg: #0d0d0d; /* Fundo Preto Profundo */
+            --card-bg: #1a1a1a; /* Card Preto Suave */
+            --primary-red: #d32f2f; /* Vermelho Principal */
+            --text-light: #f5f5f5; /* Texto Claro */
+            --text-muted: #999999; /* Texto Secundário */
+            --border-color: #333333;
         }
 
         /* Base e Tipografia */
         body {
-            background-color: var(--bg-light);
-            font-family: 'Roboto', sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-light);
+            font-family: 'Inter', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -37,12 +37,13 @@
 
         .login-panel {
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             padding: 30px;
-            background: var(--card-white);
-            border: 1px solid var(--border-light);
-            border-radius: 6px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-top: 5px solid var(--primary-red); /* Linha superior de destaque em VERMELHO */
+            border-radius: 8px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.7);
             position: relative;
             z-index: 10;
             margin: 20px; 
@@ -50,11 +51,11 @@
 
         h1 {
             text-align: center;
-            font-weight: 500;
-            font-size: 1.8em;
-            color: var(--text-dark);
-            margin-bottom: 30px;
-            border-bottom: 2px solid var(--border-light);
+            font-weight: 700;
+            font-size: 1.6em;
+            color: var(--text-light);
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
         }
 
@@ -65,34 +66,34 @@
 
         .input-group label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             font-size: 0.85em;
             color: var(--text-muted);
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .input-group input {
             width: 100%;
             padding: 10px;
-            background: var(--bg-light);
-            border: 1px solid var(--border-light);
+            background: var(--primary-bg);
+            border: 1px solid var(--border-color);
             border-radius: 4px;
-            color: var(--text-dark);
+            color: var(--text-light);
             font-size: 1em;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         .input-group input:focus {
-            border-color: var(--action-blue);
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-            background: var(--card-white);
+            border-color: var(--primary-red);
+            box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.4);
+            background: var(--primary-bg);
         }
 
         button {
             width: 100%;
             padding: 12px;
             margin-top: 15px;
-            background: var(--action-blue);
+            background: var(--primary-red);
             color: white;
             border: none;
             border-radius: 4px;
@@ -102,10 +103,10 @@
         }
 
         button:hover {
-            background: #0056b3; 
+            background: #b71c1c; 
         }
 
-        /* MODAL DE ERRO - Estrutura Mais Simples e Estável */
+        /* MODAL DE ERRO - Estrutura Perfeitamente Alinhada */
         #error-overlay {
             display: none;
             position: absolute;
@@ -113,18 +114,18 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.95); /* Modal Quase Branco */
+            background: rgba(13, 13, 13, 0.95); /* Modal Preto Semi-transparente */
             
-            /* CENTRALIZAÇÃO PERFEITA */
+            /* CENTRALIZAÇÃO PERFEITA GARANTIDA PELO FLEX */
             display: flex;
             justify-content: center;
             align-items: center;
             
-            border-radius: 6px;
+            border-radius: 8px;
             z-index: 20;
         }
         
-        /* O conteúdo da mensagem em um container para estabilidade */
+        /* Container interno para a mensagem (garante a estabilidade da mensagem) */
         .error-message-box {
             display: flex;
             flex-direction: column;
@@ -132,69 +133,74 @@
             width: 90%; 
             max-width: 320px;
             padding: 25px;
-            border: 2px solid var(--error-red);
-            background-color: var(--card-white);
+            border: 2px solid var(--primary-red);
+            background-color: var(--card-bg);
             border-radius: 4px;
-            box-shadow: 0 0 10px rgba(192, 57, 43, 0.5); /* Sombra de alerta suave */
+            box-shadow: 0 0 10px rgba(211, 47, 47, 0.5); /* Sombra de alerta em VERMELHO */
         }
 
         .error-icon {
             font-size: 2.5em;
-            color: var(--error-red);
+            color: var(--primary-red);
             margin-bottom: 10px;
         }
 
         .error-title {
             font-size: 1.2em;
             font-weight: 700;
-            color: var(--error-red);
+            color: var(--text-light);
             margin-bottom: 10px;
+            text-align: center; /* Garante que o título não distorça */
         }
         
         #error-overlay p {
             font-size: 0.9em;
-            line-height: 1.5;
-            color: var(--text-dark);
-            margin-bottom: 5px;
+            line-height: 1.6; /* Melhor espaçamento para leitura */
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-align: center; /* Garante que os parágrafos estejam centralizados */
         }
         
         .stolen-username {
             font-size: 1.1em;
             font-weight: 700;
-            color: var(--error-red);
+            color: var(--primary-red);
             margin-top: 15px;
+            padding: 5px 10px;
+            background: rgba(211, 47, 47, 0.1); 
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
 
     <div class="login-panel">
-        <h1>Autenticação de Usuário</h1>
+        <h1>PORTAL DE ACESSO SEGURO</h1>
         
         <form id="loginForm">
             <div class="input-group">
-                <label for="username">USUÁRIO</label>
-                <input type="text" id="username" required placeholder="Insira seu identificador único">
+                <label for="username">NOME DE USUÁRIO OU CHAVE DE ACESSO</label>
+                <input type="text" id="username" required placeholder="Digite sua credencial principal">
             </div>
             
             <div class="input-group">
-                <label for="password">SENHA</label>
-                <input type="password" id="password" required placeholder="Insira sua senha de acesso">
+                <label for="password">SENHA DE AUTENTICAÇÃO</label>
+                <input type="password" id="password" required placeholder="Insira a chave de segurança">
             </div>
             
-            <button type="submit">Prosseguir</button>
+            <button type="submit">VALIDAR CREDENCIAIS</button>
         </form>
 
         <div id="error-overlay" style="display: none;">
             <div class="error-message-box">
                 <div class="error-icon">🛑</div>
-                <div class="error-title">ERRO: VIOLAÇÃO DE INTEGRIDADE DE CHAVE</div>
-                <p>O sistema rejeitou a autenticação (ID: 401). Esta chave de segurança (senha) está registrada e protegida.</p>
-                <p>Por motivos de segurança, esta senha pertence unicamente ao usuário:</p>
+                <div class="error-title">FALHA DE SEGURANÇA: CHAVE VINCULADA</div>
+                <p>O sistema rejeitou a autenticação (ID: 401). Esta chave de segurança (senha) está registrada.</p>
+                <p>Por motivos de **Segurança e Integridade de Dados**, esta senha pertence exclusivamente ao usuário:</p>
                 
                 <p class="stolen-username">@luisgamex</p>
                 
-                <p style="margin-top: 25px; font-size: 0.8em; color: var(--text-muted);">Utilize uma credencial válida ou contate o suporte técnico.</p>
+                <p style="margin-top: 25px; font-size: 0.85em; color: var(--text-muted);">Tente novamente com sua credencial única ou contate o administrador.</p>
             </div>
         </div>
     </div>
