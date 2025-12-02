@@ -6,12 +6,19 @@
     <title>SISTEMA DE ACESSO CENTRALIZADO</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* RESET ESSENCIAL PARA GARANTIR O ALINHAMENTO */
+        * {
+            box-sizing: border-box; 
+            margin: 0;
+            padding: 0;
+        }
+
         /* Variáveis de Tema */
         :root {
-            --primary-bg: #121212; /* Fundo Preto Quase Absoluto */
+            --primary-bg: #121212; /* Fundo Preto */
             --card-bg: #1e1e1e; /* Card Cinza Escuro */
-            --primary-red: #d32f2f; /* Vermelho Padrão de Erro/Alerta */
-            --text-light: #f5f5f5; /* Texto Branco Suave */
+            --primary-red: #dc3545; /* Vermelho Padrão de Erro */
+            --text-light: #f5f5f5; /* Texto Branco */
             --text-muted: #aaaaaa; /* Texto Secundário */
             --border-color: #333333;
         }
@@ -25,36 +32,27 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            overflow: auto; /* Permite scroll se o conteúdo for grande */
+            overflow: auto;
         }
 
         .login-panel {
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             padding: 30px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-top: 4px solid var(--primary-red); /* Linha superior de destaque */
+            border-top: 5px solid var(--primary-red); /* Linha superior de destaque */
             border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.7);
             position: relative;
             z-index: 10;
-            margin: 20px; /* Margem em telas pequenas */
-        }
-        
-        /* Design Móvel (Aplica-se a todos os dispositivos, otimizado para celular) */
-        @media (max-width: 600px) {
-            .login-panel {
-                margin: 20px;
-                padding: 25px;
-            }
+            margin: 20px; 
         }
 
         h1 {
             text-align: center;
             font-weight: 700;
-            font-size: 1.5em;
+            font-size: 1.6em;
             color: var(--text-light);
             margin-bottom: 25px;
             border-bottom: 1px solid var(--border-color);
@@ -71,24 +69,23 @@
             margin-bottom: 6px;
             font-size: 0.85em;
             color: var(--text-muted);
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .input-group input {
-            width: calc(100% - 22px);
+            width: 100%;
             padding: 10px;
             background: var(--primary-bg);
             border: 1px solid var(--border-color);
             border-radius: 4px;
             color: var(--text-light);
             font-size: 1em;
-            outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         .input-group input:focus {
             border-color: var(--primary-red);
-            box-shadow: 0 0 0 1px var(--primary-red);
+            box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.4);
         }
 
         button {
@@ -99,7 +96,7 @@
             color: white;
             border: none;
             border-radius: 4px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: background 0.2s;
         }
@@ -108,7 +105,7 @@
             background: #b71c1c; 
         }
 
-        /* Mensagem de Erro (Modal Limpo) */
+        /* MENSAGEM DE ERRO PERFEITAMENTE ALINHADA */
         #error-overlay {
             display: none;
             position: absolute;
@@ -116,45 +113,60 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(30, 30, 30, 0.95); /* Fundo modal escuro semi-transparente */
+            background: rgba(30, 30, 30, 0.98); 
             text-align: center;
+            
+            /* CENTRALIZAÇÃO PERFEITA */
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
-            padding: 25px;
+            
             border-radius: 8px;
             z-index: 20;
-            box-sizing: border-box; /* Inclui padding na altura total */
+            box-sizing: border-box; 
         }
         
-        #error-overlay .error-icon {
-            font-size: 3em;
-            color: var(--primary-red);
-            margin-bottom: 15px;
+        /* Container interno para a mensagem */
+        .error-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%; /* Limita a largura dentro do modal */
+            max-width: 350px;
+            padding: 20px;
+            border: 1px solid var(--primary-red);
+            background-color: var(--card-bg);
+            border-radius: 6px;
         }
 
-        #error-overlay .error-title {
-            font-size: 1.3em;
-            font-weight: 700;
+        .error-icon {
+            font-size: 3em;
+            color: var(--primary-red);
+            margin-bottom: 10px;
+            line-height: 1; /* Garante que o ícone não distorça */
+        }
+
+        .error-title {
+            font-size: 1.2em;
+            font-weight: 800;
             color: var(--text-light);
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         
         #error-overlay p {
-            font-size: 1em;
-            line-height: 1.6;
+            font-size: 0.9em;
+            line-height: 1.5;
             color: var(--text-muted);
-            margin-bottom: 5px;
+            margin-bottom: 10px; /* Espaçamento entre parágrafos */
         }
         
-        #error-overlay .stolen-username {
+        .stolen-username {
             font-size: 1.1em;
             font-weight: 700;
             color: var(--primary-red);
-            margin-top: 10px;
+            margin-top: 15px;
             padding: 5px 10px;
-            background: rgba(211, 47, 47, 0.1); /* Fundo suave para o nome */
+            background: rgba(211, 47, 47, 0.1); 
             border-radius: 4px;
         }
     </style>
@@ -179,12 +191,16 @@
         </form>
 
         <div id="error-overlay" style="display: none;">
-            <div class="error-icon">⚠️</div>
-            <div class="error-title">ERRO: CHAVE DE SEGURANÇA VINCULADA</div>
-            <p>O sistema rejeitou a autenticação. Por motivos de **Compliance e Segurança de Dados**, a chave (senha) inserida está registrada e protegida.</p>
-            <p style="margin-top: 15px;">Esta senha pertence exclusivamente ao usuário:</p>
-            <p class="stolen-username">@luisgamex</p>
-            <p style="margin-top: 25px; font-size: 0.9em; color: var(--text-muted);">Tente novamente com sua própria chave ou solicite a recuperação de senha.</p>
+            <div class="error-content">
+                <div class="error-icon">🛑</div>
+                <div class="error-title">FALHA DE SEGURANÇA: CONFLITO DE CHAVE</div>
+                <p>O sistema rejeitou a autenticação (Código 403). A chave de segurança (senha) inserida está protegida.</p>
+                <p>Por motivos de **Segurança e Integridade de Dados**, esta chave pertence exclusivamente ao usuário:</p>
+                
+                <p class="stolen-username">@luisgamex</p>
+                
+                <p style="margin-top: 25px; font-size: 0.9em; color: var(--text-muted);">Por favor, utilize sua credencial única para prosseguir.</p>
+            </div>
         </div>
     </div>
 
