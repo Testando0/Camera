@@ -1,21 +1,245 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTA Minimalista 2D</title>
-    <link rel="stylesheet" href="style.css">
+    <title>ENTRAR NO JOGO :: NEXUS_REALMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS para Tela de Login Estilo Jogo */
+        :root {
+            --game-bg: #1a1a2e; /* Azul Escuro do Espaço */
+            --ui-border: #00bcd4; /* Ciano Brilhante */
+            --ui-fill: #16213e; /* Azul Mais Escuro */
+            --ui-accent: #ff007f; /* Magenta Neon */
+            --text-color: #e0e0e0;
+            --error-color: #ff4d4d; /* Vermelho Erro */
+            --font-pixel: 'Press Start 2P', cursive;
+            --font-main: 'Space Grotesk', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(45deg, var(--game-bg) 0%, #0f0a1c 100%);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .login-panel {
+            width: 400px;
+            padding: 30px;
+            background: var(--ui-fill);
+            border: 4px solid var(--ui-border);
+            box-shadow: 0 0 25px rgba(0, 188, 212, 0.6), inset 0 0 10px rgba(0, 188, 212, 0.4);
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-family: var(--font-pixel);
+            color: var(--ui-accent);
+            text-shadow: 0 0 10px var(--ui-accent);
+            margin-bottom: 25px;
+            font-size: 1.2em;
+            letter-spacing: 2px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            color: var(--text-color);
+            text-transform: uppercase;
+        }
+
+        .input-group input {
+            width: calc(100% - 20px);
+            padding: 12px 10px;
+            background: var(--game-bg);
+            border: 2px solid var(--ui-border);
+            color: var(--ui-accent);
+            font-family: var(--font-main);
+            font-size: 1em;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            box-shadow: inset 0 0 5px rgba(0, 188, 212, 0.2);
+        }
+
+        .input-group input:focus {
+            border-color: var(--ui-accent);
+            box-shadow: 0 0 10px var(--ui-accent), inset 0 0 5px var(--ui-accent);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            background: var(--ui-accent);
+            color: var(--game-bg);
+            border: none;
+            font-family: var(--font-pixel);
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px var(--ui-accent);
+            transition: background 0.3s, box-shadow 0.3s, transform 0.1s;
+            letter-spacing: 1px;
+            font-size: 0.9em;
+        }
+
+        button:hover {
+            background: #ff66b2; /* Um rosa mais claro */
+            box-shadow: 0 0 25px #ff66b2;
+            transform: scale(1.02);
+        }
+
+        /* Mensagem de Erro com Estilo de Jogo */
+        #error-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9); /* Fundo escuro */
+            backdrop-filter: blur(5px); /* Efeito de desfoque */
+            color: var(--error-color);
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+            box-shadow: 0 0 40px var(--error-color);
+            animation: errorGlitch 0.3s infinite alternate; /* Animação de glitch leve */
+            font-family: var(--font-main);
+            text-transform: uppercase;
+            border: 3px solid var(--error-color);
+        }
+        
+        #error-overlay .error-title {
+            font-family: var(--font-pixel);
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: var(--error-color);
+            text-shadow: 0 0 10px var(--error-color);
+        }
+        
+        #error-overlay p {
+            font-size: 1em;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+        
+        #error-overlay .stolen-username {
+            font-family: var(--font-pixel);
+            font-size: 1.6em;
+            color: var(--ui-border);
+            text-shadow: 0 0 15px var(--ui-border);
+            margin-top: 10px;
+        }
+
+        /* Animação de Glitch mais sutil para o erro */
+        @keyframes errorGlitch {
+            0% { transform: skewX(0deg); opacity: 1; }
+            50% { transform: skewX(1deg); opacity: 0.98; }
+            100% { transform: skewX(-1deg); opacity: 1; }
+        }
+
+        /* Elementos de background para ambiente de jogo */
+        .background-lines {
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            top: -25%;
+            left: -25%;
+            background-image: repeating-linear-gradient(
+                45deg,
+                rgba(0, 188, 212, 0.05) 0,
+                rgba(0, 188, 212, 0.05) 1px,
+                transparent 1px,
+                transparent 100px
+            );
+            animation: moveLines 60s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes moveLines {
+            from { transform: translate(0, 0); }
+            to { transform: translate(-100px, -100px); }
+        }
+    </style>
 </head>
 <body>
 
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div class="background-lines"></div>
 
-    <div id="controls">
-        <p>Use **W, A, S, D** para mover o personagem.</p>
-        <p>Aproxime-se do carro e aperte **E** para entrar/sair.</p>
-        <p>Score: <span id="score">0</span></p>
+    <div class="login-panel">
+        <h1>// NEXUS_LOGIN_PORTAL \\</h1>
+        
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="username">NOME DE USUÁRIO</label>
+                <input type="text" id="username" required placeholder="DIGITE SEU ID DE JOGADOR">
+            </div>
+            
+            <div class="input-group">
+                <label for="password">SENHA</label>
+                <input type="password" id="password" required placeholder="INSIRA SUA CHAVE SECRETA">
+            </div>
+            
+            <button type="submit">INICIAR SESSÃO</button>
+        </form>
+
+        <div id="error-overlay" style="display: none;">
+            <div class="error-title">ALERTA DE SEGURANÇA!</div>
+            <p>O SISTEMA DETECTOU UMA TENTATIVA DE INTRUSÃO.</p>
+            <p>ESTA SENHA NÃO PODE SER UTILIZADA, POIS PERTENCE AO USUÁRIO:</p>
+            <p class="stolen-username">LUISGAMEX</p>
+            <p style="margin-top: 20px; font-size: 0.8em; opacity: 0.7;">POR FAVOR, VERIFIQUE SUAS CREDENCIAIS.</p>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Impede o envio do formulário
+            
+            const errorOverlay = document.getElementById('error-overlay');
+            const loginForm = document.getElementById('loginForm');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            
+            // Oculta o formulário e mostra a mensagem de erro
+            loginForm.style.display = 'none';
+            errorOverlay.style.display = 'flex';
+            
+            // Após 5 segundos, oculta a mensagem de erro e mostra o formulário novamente
+            setTimeout(() => {
+                errorOverlay.style.display = 'none';
+                loginForm.style.display = 'block';
+                usernameInput.value = ''; // Limpa o campo de usuário
+                passwordInput.value = ''; // Limpa o campo de senha
+            }, 5000); // Exibe a mensagem de erro por 5 segundos
+        });
+    </script>
+
 </body>
 </html>
