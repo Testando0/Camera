@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Câmera com Filtros</title>
+    <style>
+        /* --- ESTILOS GERAIS --- */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden; /* Evita rolagem */
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* --- VÍDEO E CANVAS --- */
+        .camera-container {
+            position: relative;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #111;
+            overflow: hidden;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Preenche a tela como o Instagram */
+            transform: scaleX(-1); /* Espelha a câmera frontal */
+            transition: filter 0.3s ease;
+        }
+
+        /* Canvas escondido usado apenas para processar a captura */
+        canvas {
+            display: none;
+        }
+
+        /* --- UI E CONTROLES --- */
+        .ui-layer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding-bottom: 30px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        /* Barra de rolagem de filtros */
+        .filters-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 10px 20px;
+            width: 100%;
+            box-sizing: border-box;
+            scrollbar-width: none; /* Firefox */
+        }
+        .filters-scroll::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
+
+        .filter-btn {
+            min-width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            background-size: cover;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: transform 0.2s, opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            text-shadow: 1px 1px 2px black;
+            font-weight: bold;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            transform: scale(1.1);
+            opacity: 1;
+            border-color: #e1306c; /* Cor do Instagram */
+        }
+
+        /* Botão de Captura */
+        .shutter-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: white;
+            border: 4px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .shutter-btn:active {
+            transform: scale(0.9);
+            background-color: #ddd;
+        }
+
+        /* Animação de Flash */
+        .flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 20;
+        }
+        .flash.animate {
+            animation: flashAnim 0.3s ease-out;
+        }
+
+        @keyframes flashAnim {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* --- CLASSES DOS FILTROS (CSS) --- */
+        /* Estas classes afetam o preview do vídeo */
+        .normal { filter: none; }
+        .pb { filter: grayscale(100%); }
+        .sepia { filter: sepia(0.8) contrast(1.2); }
+        .vibrante { filter: saturate(200%) contrast(110%); }
+        .retro { filter: hue-rotate(-20deg) contrast(0.9) brightness(1.1); }
+        .invertido { filter: invert(100%); }
+        .blur { filter: blur(2px); }
+
+    </style>
+</head>
+<body>
+
+    <div class="camera-container">
+        <video id="video" autoplay playsinline></video>
+        <div id="flash" class="flash"></div>
+        
+        <div class="ui-layer">
+            <div class="filters-scroll">
+                <div class="filter-btn active" onclick="setFilter('normal', '')" style="background-color: #333;">Normal</div>
+                <div class="filter-btn" onclick="setFilter('pb', 'grayscale(100%)')" style="background-color: #555;">P&B</div>
+                <div class="filter-btn" onclick="setFilter('sepia', 'sepia(0.8) contrast(1.2)')" style="background-color: #cca;">Sépia</div>
+                <div class="filter-btn" onclick="setFilter('vibrante', 'saturate(200%) contrast(110%)')" style="background-color: #f55;">Vibrante</div>
+                <div class="filter-btn" onclick="setFilter('retro', 'hue-rotate(-20deg) contrast(0.9) brightness(1.1)')" style="background-color: #58a;">Retrô</div>
+                <div class="filter-btn" onclick="setFilter('invertido', 'invert(100%)')" style="background-color: #000;">Invert</div>
+            </div>
+
+            <button class="shutter-btn" onclick="takePhoto()"></button>
+        </div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const flash = document.getElementById('flash');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        
+        let currentFilterString = 'none'; // Armazena o valor do filtro para o Canvas
+
+        // 1. Inicializar a Câmera
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: "user", // "environment" para câmera traseira
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
+                    }, 
+                    audio: false 
+                });
+                video.srcObject = stream;
+            } catch (err) {
+                alert("Erro ao acessar a câmera: " + err);
+                console.error(err);
+            }
+        }
+
+        // 2. Função para aplicar filtros
+        function setFilter(className, filterString) {
+            // Atualiza visual do vídeo
+            video.className = className;
+            
+            // Atualiza variável para usar na captura (Canvas)
+            currentFilterString = filterString || 'none';
+
+            // Atualiza UI dos botões
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        // 3. Tirar Foto e Salvar
+        function takePhoto() {
+            // Efeito de Flash
+            flash.classList.add('animate');
+            setTimeout(() => flash.classList.remove('animate'), 500);
+
+            // Configurar Canvas com o tamanho do vídeo
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+
+            // Espelhar horizontalmente (se for câmera frontal, para ficar igual ao preview)
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+
+            // APLICAR O FILTRO NO CONTEXTO DO CANVAS
+            // Isso garante que a foto salva tenha o mesmo filtro do vídeo
+            ctx.filter = currentFilterString;
+
+            // Desenhar o vídeo no canvas
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Criar link de download
+            const dataURL = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = dataURL;
+            link.download = `foto_insta_${Date.now()}.png`;
+            link.click();
+        }
+
+        // Iniciar
+        window.addEventListener('load', startCamera);
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Câmera com Filtros</title>
+    <style>
+        /* --- ESTILOS GERAIS --- */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden; /* Evita rolagem */
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* --- VÍDEO E CANVAS --- */
+        .camera-container {
+            position: relative;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #111;
+            overflow: hidden;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Preenche a tela como o Instagram */
+            transform: scaleX(-1); /* Espelha a câmera frontal */
+            transition: filter 0.3s ease;
+        }
+
+        /* Canvas escondido usado apenas para processar a captura */
+        canvas {
+            display: none;
+        }
+
+        /* --- UI E CONTROLES --- */
+        .ui-layer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding-bottom: 30px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        /* Barra de rolagem de filtros */
+        .filters-scroll {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 10px 20px;
+            width: 100%;
+            box-sizing: border-box;
+            scrollbar-width: none; /* Firefox */
+        }
+        .filters-scroll::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
+
+        .filter-btn {
+            min-width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            background-size: cover;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: transform 0.2s, opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            text-shadow: 1px 1px 2px black;
+            font-weight: bold;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            transform: scale(1.1);
+            opacity: 1;
+            border-color: #e1306c; /* Cor do Instagram */
+        }
+
+        /* Botão de Captura */
+        .shutter-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: white;
+            border: 4px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .shutter-btn:active {
+            transform: scale(0.9);
+            background-color: #ddd;
+        }
+
+        /* Animação de Flash */
+        .flash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 20;
+        }
+        .flash.animate {
+            animation: flashAnim 0.3s ease-out;
+        }
+
+        @keyframes flashAnim {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* --- CLASSES DOS FILTROS (CSS) --- */
+        /* Estas classes afetam o preview do vídeo */
+        .normal { filter: none; }
+        .pb { filter: grayscale(100%); }
+        .sepia { filter: sepia(0.8) contrast(1.2); }
+        .vibrante { filter: saturate(200%) contrast(110%); }
+        .retro { filter: hue-rotate(-20deg) contrast(0.9) brightness(1.1); }
+        .invertido { filter: invert(100%); }
+        .blur { filter: blur(2px); }
+
+    </style>
+</head>
+<body>
+
+    <div class="camera-container">
+        <video id="video" autoplay playsinline></video>
+        <div id="flash" class="flash"></div>
+        
+        <div class="ui-layer">
+            <div class="filters-scroll">
+                <div class="filter-btn active" onclick="setFilter('normal', '')" style="background-color: #333;">Normal</div>
+                <div class="filter-btn" onclick="setFilter('pb', 'grayscale(100%)')" style="background-color: #555;">P&B</div>
+                <div class="filter-btn" onclick="setFilter('sepia', 'sepia(0.8) contrast(1.2)')" style="background-color: #cca;">Sépia</div>
+                <div class="filter-btn" onclick="setFilter('vibrante', 'saturate(200%) contrast(110%)')" style="background-color: #f55;">Vibrante</div>
+                <div class="filter-btn" onclick="setFilter('retro', 'hue-rotate(-20deg) contrast(0.9) brightness(1.1)')" style="background-color: #58a;">Retrô</div>
+                <div class="filter-btn" onclick="setFilter('invertido', 'invert(100%)')" style="background-color: #000;">Invert</div>
+            </div>
+
+            <button class="shutter-btn" onclick="takePhoto()"></button>
+        </div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const flash = document.getElementById('flash');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        
+        let currentFilterString = 'none'; // Armazena o valor do filtro para o Canvas
+
+        // 1. Inicializar a Câmera
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: "user", // "environment" para câmera traseira
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
+                    }, 
+                    audio: false 
+                });
+                video.srcObject = stream;
+            } catch (err) {
+                alert("Erro ao acessar a câmera: " + err);
+                console.error(err);
+            }
+        }
+
+        // 2. Função para aplicar filtros
+        function setFilter(className, filterString) {
+            // Atualiza visual do vídeo
+            video.className = className;
+            
+            // Atualiza variável para usar na captura (Canvas)
+            currentFilterString = filterString || 'none';
+
+            // Atualiza UI dos botões
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        // 3. Tirar Foto e Salvar
+        function takePhoto() {
+            // Efeito de Flash
+            flash.classList.add('animate');
+            setTimeout(() => flash.classList.remove('animate'), 500);
+
+            // Configurar Canvas com o tamanho do vídeo
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+
+            // Espelhar horizontalmente (se for câmera frontal, para ficar igual ao preview)
+            ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+
+            // APLICAR O FILTRO NO CONTEXTO DO CANVAS
+            // Isso garante que a foto salva tenha o mesmo filtro do vídeo
+            ctx.filter = currentFilterString;
+
+            // Desenhar o vídeo no canvas
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Criar link de download
+            const dataURL = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = dataURL;
+            link.download = `foto_insta_${Date.now()}.png`;
+            link.click();
+        }
+
+        // Iniciar
+        window.addEventListener('load', startCamera);
+    </script>
+</body>
+</html>
