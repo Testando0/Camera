@@ -4,23 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acesso à Plataforma :: Interface Profissional</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* CSS Profissional Minimalista */
+        /* CSS Profissional Sóbrio */
         :root {
-            --dark-bg: #0d1117; /* Fundo Git-style */
-            --card-bg: #161b22; /* Card Escuro */
-            --primary-blue: #2196f3; /* Azul Profissional */
-            --text-light: #c9d1d9; /* Texto Claro */
-            --text-muted: #8b949e; /* Texto Secundário */
-            --error-red: #f85149; /* Vermelho de Erro */
-            --border-color: #30363d;
+            --dark-bg: #f8f8f8; /* Fundo muito claro */
+            --card-bg: #ffffff; /* Card branco */
+            --primary-blue: #007bff; /* Azul primário padrão */
+            --text-dark: #333333; /* Texto escuro */
+            --text-muted: #6c757d; /* Texto secundário */
+            --error-red: #dc3545; /* Vermelho padrão de erro */
+            --border-color: #dee2e6;
         }
 
         body {
             background-color: var(--dark-bg);
-            color: var(--text-light);
-            font-family: 'Roboto', sans-serif;
+            color: var(--text-dark);
+            font-family: 'Inter', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -30,22 +30,22 @@
         }
 
         .login-panel {
-            width: 380px;
-            padding: 30px 40px;
+            width: 360px;
+            padding: 35px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             position: relative;
             z-index: 10;
         }
 
         h1 {
             text-align: center;
-            font-weight: 300;
-            font-size: 1.8em;
-            color: var(--text-light);
-            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 1.6em;
+            color: var(--text-dark);
+            margin-bottom: 25px;
         }
 
         .input-group {
@@ -55,10 +55,10 @@
 
         .input-group label {
             display: block;
-            margin-bottom: 8px;
-            font-size: 0.9em;
+            margin-bottom: 6px;
+            font-size: 0.85em;
             color: var(--text-muted);
-            font-weight: 400;
+            font-weight: 500;
         }
 
         .input-group input {
@@ -67,15 +67,15 @@
             background: var(--dark-bg);
             border: 1px solid var(--border-color);
             border-radius: 4px;
-            color: var(--text-light);
+            color: var(--text-dark);
             font-size: 1em;
             outline: none;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         .input-group input:focus {
             border-color: var(--primary-blue);
-            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
         }
 
         button {
@@ -86,15 +86,13 @@
             color: white;
             border: none;
             border-radius: 4px;
-            font-family: 'Roboto', sans-serif;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s, box-shadow 0.2s;
+            transition: background 0.2s;
         }
 
         button:hover {
-            background: #1976d2; /* Tom de azul mais escuro */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background: #0056b3; /* Tom de azul mais escuro */
         }
 
         /* Mensagem de Erro Profissional (Modal/Overlay) */
@@ -105,92 +103,99 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(22, 27, 34, 0.95); /* Fundo semi-transparente */
-            color: var(--error-red);
+            background: rgba(255, 255, 255, 0.95); /* Fundo modal branco semi-transparente */
             text-align: center;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
             padding: 20px;
-            border-radius: 6px;
+            border-radius: 8px;
             border: 2px solid var(--error-red);
-            animation: fadeInError 0.5s ease-out;
+            z-index: 20;
         }
         
-        @keyframes fadeInError {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        #error-overlay .error-icon {
+            font-size: 3em;
+            color: var(--error-red);
+            margin-bottom: 15px;
         }
 
         #error-overlay .error-title {
-            font-size: 1.5em;
+            font-size: 1.4em;
             font-weight: 700;
-            margin-bottom: 15px;
+            color: var(--text-dark);
+            margin-bottom: 10px;
         }
         
         #error-overlay p {
-            font-size: 1.1em;
+            font-size: 1em;
             line-height: 1.5;
-            color: var(--text-light);
+            color: var(--text-muted);
+            margin-bottom: 5px;
         }
         
         #error-overlay .stolen-username {
-            font-size: 1.3em;
+            font-size: 1.2em;
             font-weight: 700;
             color: var(--error-red);
-            margin-top: 10px;
+            margin-top: 15px;
+            padding: 5px 10px;
+            background: #fff3f3; /* Fundo suave para destaque */
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
 
     <div class="login-panel">
-        <h1>LOGIN DE ACESSO</h1>
+        <h1>LOGIN DO SISTEMA</h1>
         
         <form id="loginForm">
             <div class="input-group">
-                <label for="username">NOME DE USUÁRIO / EMAIL</label>
-                <input type="text" id="username" required placeholder="Digite seu usuário ou e-mail">
+                <label for="username">NOME DE USUÁRIO OU E-MAIL</label>
+                <input type="text" id="username" required placeholder="exemplo@dominio.com">
             </div>
             
             <div class="input-group">
                 <label for="password">SENHA</label>
-                <input type="password" id="password" required placeholder="Insira sua senha">
+                <input type="password" id="password" required placeholder="Insira sua credencial">
             </div>
             
-            <button type="submit">Entrar</button>
+            <button type="submit">Autenticar</button>
         </form>
 
         <div id="error-overlay" style="display: none;">
-            <div class="error-title">ERRO DE AUTENTICAÇÃO CRÍTICO</div>
-            <p>O SISTEMA DETECTOU UMA CHAVE DE SEGURANÇA INVÁLIDA.</p>
-            <p>Esta senha não pode ser utilizada, pois pertence ao usuário:</p>
+            <div class="error-icon">❌</div>
+            <div class="error-title">FALHA DE AUTENTICAÇÃO: CONFLITO DE CHAVE</div>
+            <p>O sistema identificou que a chave (senha) inserida está vinculada a outra identidade.</p>
+            <p>Por motivos de **Segurança e Integridade de Dados**, esta chave não pode ser usada por você.</p>
+            <p style="margin-top: 15px;">**CHAVE VINCULADA AO USUÁRIO ORIGINAL:**</p>
             <p class="stolen-username">@luisgamex</p>
-            <p style="margin-top: 20px; font-size: 0.9em; color: var(--text-muted);">Por favor, insira credenciais válidas e tente novamente.</p>
+            <p style="margin-top: 25px; font-size: 0.9em; color: var(--text-muted);">Por favor, utilize sua própria credencial ou redefina sua senha.</p>
         </div>
     </div>
 
     <script>
         document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault(); // Impede o envio do formulário
+            e.preventDefault(); 
             
             const errorOverlay = document.getElementById('error-overlay');
             const loginForm = document.getElementById('loginForm');
             const usernameInput = document.getElementById('username');
             const passwordInput = document.getElementById('password');
             
-            // Oculta o formulário e mostra a mensagem de erro
+            // Oculta o formulário e mostra o modal de erro profissional
             loginForm.style.display = 'none';
             errorOverlay.style.display = 'flex';
             
-            // Após 5 segundos, oculta a mensagem de erro e mostra o formulário novamente
+            // Após 6 segundos, reverte
             setTimeout(() => {
                 errorOverlay.style.display = 'none';
                 loginForm.style.display = 'block';
-                usernameInput.value = ''; // Limpa os campos
+                usernameInput.value = ''; 
                 passwordInput.value = ''; 
-            }, 5000); // Exibe a mensagem de erro por 5 segundos
+            }, 6000); 
         });
     </script>
 
