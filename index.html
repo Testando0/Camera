@@ -2,239 +2,450 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✨ Calculadora de Alma Gêmea ✨</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>👶 Baby Care Simulator 👶</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* --- ESTILOS TIKTOK / NEON --- */
-        :root {
-            --dark-bg: #111;
-            --neon-pink: #ff3366;
-            --neon-blue: #33ccff;
-            --font-main: 'Arial', sans-serif;
-        }
-        
+        /* --- Reset & Base --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            background-color: var(--dark-bg);
-            color: #fff;
-            font-family: var(--font-main);
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(to bottom right, #fce4ec, #e0f2f7); /* Tons pastel */
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
+            overflow: hidden;
+            color: #333;
+            -webkit-user-select: none; /* Desabilita seleção de texto no iOS */
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            touch-action: manipulation; /* Melhor resposta ao toque */
         }
 
-        .container {
+        /* --- Game Container (Simula tela de celular) --- */
+        .game-container {
             width: 100%;
-            max-width: 450px;
-            padding: 30px 20px;
-            border-radius: 15px;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-            background: #1e1e1e;
+            max-width: 400px; /* Largura de celular */
+            height: 100vh;
+            max-height: 800px; /* Altura de celular */
+            background-color: #fff;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2), 0 0 0 8px rgba(255,255,255,0.8) inset;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
         }
 
-        h1 {
-            color: var(--neon-pink);
-            font-size: 2.5em;
-            margin-bottom: 5px;
-            text-shadow: 0 0 10px var(--neon-pink), 0 0 20px rgba(255, 51, 102, 0.5);
+        /* --- Header / Infos do Jogo --- */
+        .game-header {
+            background-color: #ffcdd2; /* Rosa claro */
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Fredoka One', cursive;
+            color: #d81b60; /* Rosa escuro */
+            border-bottom: 2px solid #f48fb1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        .game-header div { font-size: 1.1em; }
+
+        /* --- Bebê e Status --- */
+        .baby-area {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px;
+            background: #ffebee; /* Fundo mais claro */
+            position: relative;
+        }
+        .baby-image {
+            width: 180px;
+            height: 180px;
+            background: url('https://i.imgur.com/B9B2Qp7.png') no-repeat center center / contain; /* Imagem de bebê genérica */
+            transition: transform 0.2s ease-out;
+        }
+        .baby-image.sleep { transform: rotate(5deg); }
+        .baby-image.happy { transform: scale(1.05); }
+        .baby-image.sad { transform: translateY(5px); filter: grayscale(30%); }
+        .baby-image.cry { animation: shake 0.5s infinite; filter: grayscale(50%); }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
         }
 
-        p.subtitle {
-            font-size: 1.1em;
-            color: #bbb;
-            margin-bottom: 30px;
+        .status-bars {
+            width: 90%;
+            max-width: 250px;
+            margin-top: 20px;
         }
-
-        /* --- INPUTS E BOTÃO --- */
-        .input-group {
-            margin-bottom: 20px;
-            text-align: left;
+        .status-bar {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            height: 15px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            position: relative;
         }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: var(--neon-blue);
+        .status-fill {
+            height: 100%;
+            width: 100%; /* Largura inicial, ajustada via JS */
+            border-radius: 10px;
+            background-color: #81c784; /* Verde */
+            transition: width 0.5s ease-out, background-color 0.5s ease-out;
         }
+        .status-bar.hunger .status-fill { background-color: #ffd54f; } /* Amarelo */
+        .status-bar.diaper .status-fill { background-color: #90caf9; } /* Azul */
+        .status-bar.sleep .status-fill { background-color: #ce93d8; } /* Roxo */
+        
+        /* Cores de alerta */
+        .status-fill.warning { background-color: #ffb74d !important; } /* Laranja */
+        .status-fill.danger { background-color: #ef5350 !important; } /* Vermelho */
 
-        input[type="text"] {
-            width: calc(100% - 20px);
-            padding: 10px;
-            border: 2px solid var(--neon-blue);
-            border-radius: 8px;
-            background-color: #333;
+
+        /* --- Botões de Ação --- */
+        .actions-area {
+            background-color: #f8bbd0; /* Rosa mais escuro */
+            padding: 20px 10px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            border-top: 2px solid #f48fb1;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+        }
+        .action-button {
+            background-color: #ef9a9a; /* Rosa salmão */
             color: #fff;
+            padding: 15px 10px;
+            border: none;
+            border-radius: 15px;
+            font-family: 'Fredoka One', cursive;
             font-size: 1em;
-            transition: border-color 0.3s;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            min-height: 80px;
         }
+        .action-button:hover { background-color: #e57373; }
+        .action-button:active { transform: translateY(2px); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .action-button.disabled { opacity: 0.6; cursor: not-allowed; }
+        .action-button .icon { font-size: 1.8em; line-height: 1; } /* Ícones de emoji */
 
-        input[type="text"]:focus {
-            outline: none;
-            border-color: var(--neon-pink);
-            box-shadow: 0 0 8px var(--neon-pink);
+        /* --- Popups (Game Over / Vitória) --- */
+        .popup-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-out;
         }
-
-        button {
-            background-color: var(--neon-pink);
-            color: #111;
-            padding: 12px 30px;
+        .popup-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .popup-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            max-width: 80%;
+            transform: scale(0.8);
+            transition: transform 0.3s ease-out;
+        }
+        .popup-overlay.active .popup-content {
+            transform: scale(1);
+        }
+        .popup-content h2 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: #d81b60;
+        }
+        .popup-content p {
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            color: #555;
+        }
+        .popup-content button {
+            background-color: #d81b60;
+            color: #fff;
+            padding: 10px 25px;
             border: none;
             border-radius: 50px;
-            font-size: 1.2em;
-            font-weight: bold;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.1em;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
-            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+            transition: background-color 0.2s;
         }
+        .popup-content button:hover { background-color: #c2185b; }
 
-        button:hover {
-            background-color: #ff6699;
-            box-shadow: 0 4px 20px var(--neon-pink);
-        }
-        
-        button:active {
-            transform: scale(0.98);
-        }
-
-        /* --- ÁREA DE RESULTADO --- */
-        #result-area {
-            margin-top: 30px;
-            border-top: 2px dashed #444;
-            padding-top: 30px;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-        }
-
-        #result-area.show {
-            opacity: 1;
-        }
-
-        #compatibility-score {
-            font-size: 4em;
-            font-weight: bold;
-            color: var(--neon-blue);
-            text-shadow: 0 0 10px var(--neon-blue), 0 0 30px rgba(51, 204, 255, 0.7);
-            animation: pulse 1.5s infinite alternate;
-        }
-
-        #result-text {
-            font-size: 1.8em;
-            margin-bottom: 15px;
-            color: var(--neon-pink);
-        }
-
-        #result-message {
-            font-style: italic;
-            color: #ccc;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(1.05); opacity: 1; }
-        }
-
+        .popup-content.game-over h2 { color: #ef5350; }
+        .popup-content.game-over button { background-color: #ef5350; }
+        .popup-content.game-over button:hover { background-color: #d32f2f; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>💖 Teste da Alma Gêmea 💖</h1>
-        <p class="subtitle">Descubra sua compatibilidade mística com apenas dois nomes.</p>
-
-        <div class="input-group">
-            <label for="name1">Seu Nome:</label>
-            <input type="text" id="name1" placeholder="Ex: Maria" required>
+    <div class="game-container">
+        <div class="game-header">
+            <div>Score: <span id="score">0</span></div>
+            <div>Tempo: <span id="timer">00:00</span></div>
         </div>
 
-        <div class="input-group">
-            <label for="name2">Nome da Alma Gêmea:</label>
-            <input type="text" id="name2" placeholder="Ex: João" required>
+        <div class="baby-area">
+            <div id="babyImage" class="baby-image"></div>
+            <div class="status-bars">
+                <div class="status-bar hunger">
+                    <div id="hungerFill" class="status-fill" style="width: 100%;"></div>
+                </div>
+                <div class="status-bar diaper">
+                    <div id="diaperFill" class="status-fill" style="width: 100%;"></div>
+                </div>
+                <div class="status-bar sleep">
+                    <div id="sleepFill" class="status-fill" style="width: 100%;"></div>
+                </div>
+            </div>
         </div>
 
-        <button onclick="calculate()">CALCULAR VIBRAÇÃO</button>
-
-        <div id="result-area">
-            <p id="compatibility-score"></p>
-            <p id="result-text"></p>
-            <p id="result-message"></p>
+        <div class="actions-area">
+            <button class="action-button" onclick="feedBaby()">
+                <span class="icon">🍼</span> Alimentar
+            </button>
+            <button class="action-button" onclick="changeDiaper()">
+                <span class="icon">💩</span> Trocar Fralda
+            </button>
+            <button class="action-button" onclick="putToSleep()">
+                <span class="icon">😴</span> Nanar
+            </button>
+            <button class="action-button" onclick="takeForWalk()">
+                <span class="icon">🚶‍♀️</span> Passear
+            </button>
         </div>
 
+        <div id="gameOverPopup" class="popup-overlay">
+            <div class="popup-content game-over">
+                <h2>Game Over! 😭</h2>
+                <p>O bebê ficou muito triste e não resistiu aos seus descuidos.</p>
+                <p>Seu Score Final: <span id="finalScoreGameOver">0</span></p>
+                <button onclick="restartGame()">Jogar Novamente</button>
+            </div>
+        </div>
+
+        <div id="gameWinPopup" class="popup-overlay">
+            <div class="popup-content">
+                <h2>Parabéns! 🎉</h2>
+                <p>Você é o(a) melhor cuidador(a) de bebês!</p>
+                <p>Você cuidou do bebê por <span id="finalTimeWin">00:00</span> e atingiu um Score de <span id="finalScoreWin">0</span>.</p>
+                <button onclick="restartGame()">Jogar Novamente</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        // 1. O ALGORITMO MÁGICO (Deterministic Hashing)
-        // Esta função cria uma pontuação entre 0 e 100 baseada nos nomes.
-        // É determinística: os mesmos nomes sempre dão o mesmo resultado,
-        // o que é divertido para o usuário!
-        function calculateCompatibility(name1, name2) {
-            // Limpa, remove espaços e coloca em minúsculas
-            const cleanName1 = name1.toLowerCase().replace(/\s/g, '');
-            const cleanName2 = name2.toLowerCase().replace(/\s/g, '');
+        const babyImage = document.getElementById('babyImage');
+        const hungerFill = document.getElementById('hungerFill');
+        const diaperFill = document.getElementById('diaperFill');
+        const sleepFill = document.getElementById('sleepFill');
+        const scoreDisplay = document.getElementById('score');
+        const timerDisplay = document.getElementById('timer');
+        const gameOverPopup = document.getElementById('gameOverPopup');
+        const gameWinPopup = document.getElementById('gameWinPopup');
+        const finalScoreGameOver = document.getElementById('finalScoreGameOver');
+        const finalTimeWin = document.getElementById('finalTimeWin');
+        const finalScoreWin = document.getElementById('finalScoreWin');
 
-            // Concatena e ordena (para que "João & Maria" seja o mesmo que "Maria & João")
-            const combined = cleanName1 > cleanName2 ? cleanName1 + cleanName2 : cleanName2 + cleanName1;
-            
-            let totalSum = 0;
-            for (let i = 0; i < combined.length; i++) {
-                // Soma os códigos Unicode do caractere
-                totalSum += combined.charCodeAt(i);
-            }
+        let hunger = 100;
+        let diaper = 100;
+        let sleep = 100;
+        let score = 0;
+        let gameTime = 0; // Tempo em segundos
+        let gameInterval;
+        let needsInterval;
+        let isGameOver = false;
+        const GAME_DURATION = 180; // Duração do jogo em segundos (3 minutos)
 
-            // Garante um valor entre 0 e 99 (usando módulo 100)
-            let score = totalSum % 100;
-            
-            // Ajusta o score para garantir que nunca seja muito baixo (para ser divertido)
-            return score + 1; // Score de 1 a 100
-        }
+        const NEEDS_DECREASE_RATE = {
+            hunger: 2, // Diminui 2 a cada segundo
+            diaper: 1.5,
+            sleep: 1
+        };
+        const ACTION_EFFECT = {
+            feed: 40,
+            diaper: 50,
+            sleep: 60,
+            walk: 20
+        };
+        const ACTION_COOLDOWN = 3000; // 3 segundos de cooldown
 
-        // 2. FUNÇÃO PRINCIPAL DE CÁLCULO
-        function calculate() {
-            const name1 = document.getElementById('name1').value.trim();
-            const name2 = document.getElementById('name2').value.trim();
-            const resultArea = document.getElementById('result-area');
-            
-            if (!name1 || !name2) {
-                alert("Por favor, preencha os dois nomes!");
-                return;
-            }
+        const actionButtons = document.querySelectorAll('.action-button');
 
-            const score = calculateCompatibility(name1, name2);
+        function updateUI() {
+            hungerFill.style.width = hunger + '%';
+            diaperFill.style.width = diaper + '%';
+            sleepFill.style.width = sleep + '%';
+            scoreDisplay.innerText = score;
 
-            // Mapeia o Score para Mensagens (o segredo da trend!)
-            let resultText, resultMessage;
+            // Cores das barras de status
+            [
+                { fill: hungerFill, value: hunger },
+                { fill: diaperFill, value: diaper },
+                { fill: sleepFill, value: sleep }
+            ].forEach(item => {
+                item.fill.classList.remove('warning', 'danger');
+                if (item.value <= 30) {
+                    item.fill.classList.add('warning');
+                }
+                if (item.value <= 10) {
+                    item.fill.classList.add('danger');
+                }
+            });
 
-            if (score >= 95) {
-                resultText = "✨ ALMA GÊMEA ✨";
-                resultMessage = "Esta conexão é de outro planeta! Preparem-se para o final feliz.";
-            } else if (score >= 80) {
-                resultText = "❤️ Conexão Forte!";
-                resultMessage = "A vibração é alta! Vocês nasceram para se encontrar, invistam nesse potencial.";
-            } else if (score >= 60) {
-                resultText = "😊 Ótima Compatibilidade";
-                resultMessage = "Há muita química no ar. Com um pouco de esforço, o futuro é promissor!";
-            } else if (score >= 40) {
-                resultText = "🤝 Companheiros de Jornada";
-                resultMessage = "A amizade e o respeito são a base. Ótimos amigos ou uma conexão que precisa de tempo.";
+            // Estado do bebê (imagem)
+            babyImage.className = 'baby-image'; // Reseta classes
+            if (hunger <= 10 || diaper <= 10 || sleep <= 10) {
+                babyImage.classList.add('cry');
+            } else if (hunger <= 30 || diaper <= 30 || sleep <= 30) {
+                babyImage.classList.add('sad');
+            } else if (sleep < 50) { // Se estiver com sono, mas não crítico
+                 babyImage.classList.add('sleep');
             } else {
-                resultText = "😂 Energia Desalinhada";
-                resultMessage = "É melhor rir e seguir a trend. Talvez o universo tenha outros planos... 🤷‍♀️";
+                babyImage.classList.add('happy');
             }
-
-            // Exibe os Resultados
-            document.getElementById('compatibility-score').innerText = score + '%';
-            document.getElementById('result-text').innerText = resultText;
-            document.getElementById('result-message').innerText = resultMessage;
-
-            // Animação para exibir a área de resultado
-            resultArea.classList.remove('show');
-            setTimeout(() => {
-                resultArea.classList.add('show');
-            }, 50);
         }
+
+        function decreaseNeeds() {
+            if (isGameOver) return;
+
+            hunger = Math.max(0, hunger - NEEDS_DECREASE_RATE.hunger);
+            diaper = Math.max(0, diaper - NEEDS_DECREASE_RATE.diaper);
+            sleep = Math.max(0, sleep - NEEDS_DECREASE_RATE.sleep);
+
+            checkGameOver();
+            updateUI();
+        }
+
+        function checkGameOver() {
+            if (hunger === 0 || diaper === 0 || sleep === 0) {
+                endGame(false); // Game Over
+            }
+        }
+
+        function updateTimer() {
+            if (isGameOver) return;
+
+            gameTime++;
+            const minutes = Math.floor(gameTime / 60);
+            const seconds = gameTime % 60;
+            timerDisplay.innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            if (gameTime >= GAME_DURATION) {
+                endGame(true); // Game Win
+            }
+        }
+
+        function enableButtons() {
+            actionButtons.forEach(button => button.classList.remove('disabled'));
+        }
+
+        function disableButtonsForCooldown() {
+            actionButtons.forEach(button => button.classList.add('disabled'));
+            setTimeout(enableButtons, ACTION_COOLDOWN);
+        }
+
+        function performAction(need, effect) {
+            if (isGameOver) return;
+            disableButtonsForCooldown();
+
+            switch (need) {
+                case 'hunger':
+                    hunger = Math.min(100, hunger + effect);
+                    break;
+                case 'diaper':
+                    diaper = Math.min(100, diaper + effect);
+                    break;
+                case 'sleep':
+                    sleep = Math.min(100, sleep + effect);
+                    break;
+                case 'walk': // Passear afeta várias coisas positivamente
+                    hunger = Math.min(100, hunger + effect/2);
+                    diaper = Math.min(100, diaper + effect/2);
+                    sleep = Math.min(100, sleep + effect/2);
+                    score += 10; // Extra score for walking
+                    break;
+            }
+            score += 5; // Score base por qualquer ação
+            updateUI();
+        }
+
+        function feedBaby() { performAction('hunger', ACTION_EFFECT.feed); }
+        function changeDiaper() { performAction('diaper', ACTION_EFFECT.diaper); }
+        function putToSleep() { performAction('sleep', ACTION_EFFECT.sleep); }
+        function takeForWalk() { performAction('walk', ACTION_EFFECT.walk); }
+
+        function startGame() {
+            hunger = 100;
+            diaper = 100;
+            sleep = 100;
+            score = 0;
+            gameTime = 0;
+            isGameOver = false;
+
+            gameOverPopup.classList.remove('active');
+            gameWinPopup.classList.remove('active');
+            enableButtons();
+
+            updateUI();
+            clearInterval(gameInterval);
+            clearInterval(needsInterval);
+            gameInterval = setInterval(updateTimer, 1000); // Atualiza a cada segundo
+            needsInterval = setInterval(decreaseNeeds, 1000); // Necessidades diminuem a cada segundo
+        }
+
+        function endGame(won) {
+            isGameOver = true;
+            clearInterval(gameInterval);
+            clearInterval(needsInterval);
+            actionButtons.forEach(button => button.classList.add('disabled')); // Desabilita botões
+
+            if (won) {
+                finalTimeWin.innerText = timerDisplay.innerText;
+                finalScoreWin.innerText = score;
+                gameWinPopup.classList.add('active');
+            } else {
+                finalScoreGameOver.innerText = score;
+                gameOverPopup.classList.add('active');
+            }
+        }
+
+        function restartGame() {
+            startGame();
+        }
+
+        // Inicia o jogo quando a página carrega
+        window.onload = startGame;
     </script>
 </body>
 </html>
