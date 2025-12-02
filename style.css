@@ -1,0 +1,35 @@
+body {
+    background-color: #222;
+    color: #eee;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+#gameCanvas {
+    background-color: #383838; /* Cor escura do "chão" */
+    border: 5px solid #555;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    display: block;
+}
+
+#controls {
+    margin-top: 20px;
+    padding: 10px;
+    background: #333;
+    border-radius: 8px;
+    text-align: center;
+}
+
+#controls p {
+    margin: 5px 0;
+}
+
+#score {
+    color: #ffcc00; /* Cor amarela de alerta/dinheiro */
+    font-weight: bold;
+}
