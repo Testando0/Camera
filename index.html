@@ -3,58 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ENTRAR NO JOGO :: NEXUS_REALMS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <title>Acesso à Plataforma :: Interface Profissional</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        /* CSS para Tela de Login Estilo Jogo */
+        /* CSS Profissional Minimalista */
         :root {
-            --game-bg: #1a1a2e; /* Azul Escuro do Espaço */
-            --ui-border: #00bcd4; /* Ciano Brilhante */
-            --ui-fill: #16213e; /* Azul Mais Escuro */
-            --ui-accent: #ff007f; /* Magenta Neon */
-            --text-color: #e0e0e0;
-            --error-color: #ff4d4d; /* Vermelho Erro */
-            --font-pixel: 'Press Start 2P', cursive;
-            --font-main: 'Space Grotesk', sans-serif;
+            --dark-bg: #0d1117; /* Fundo Git-style */
+            --card-bg: #161b22; /* Card Escuro */
+            --primary-blue: #2196f3; /* Azul Profissional */
+            --text-light: #c9d1d9; /* Texto Claro */
+            --text-muted: #8b949e; /* Texto Secundário */
+            --error-red: #f85149; /* Vermelho de Erro */
+            --border-color: #30363d;
         }
 
         body {
-            background: linear-gradient(45deg, var(--game-bg) 0%, #0f0a1c 100%);
-            color: var(--text-color);
-            font-family: var(--font-main);
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            font-family: 'Roboto', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            user-select: none;
         }
 
         .login-panel {
-            width: 400px;
-            padding: 30px;
-            background: var(--ui-fill);
-            border: 4px solid var(--ui-border);
-            box-shadow: 0 0 25px rgba(0, 188, 212, 0.6), inset 0 0 10px rgba(0, 188, 212, 0.4);
+            width: 380px;
+            padding: 30px 40px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
             position: relative;
             z-index: 10;
-            text-align: center;
-            animation: fadeIn 1s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         h1 {
-            font-family: var(--font-pixel);
-            color: var(--ui-accent);
-            text-shadow: 0 0 10px var(--ui-accent);
-            margin-bottom: 25px;
-            font-size: 1.2em;
-            letter-spacing: 2px;
+            text-align: center;
+            font-weight: 300;
+            font-size: 1.8em;
+            color: var(--text-light);
+            margin-bottom: 30px;
         }
 
         .input-group {
@@ -66,52 +57,47 @@
             display: block;
             margin-bottom: 8px;
             font-size: 0.9em;
-            color: var(--text-color);
-            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 400;
         }
 
         .input-group input {
             width: calc(100% - 20px);
-            padding: 12px 10px;
-            background: var(--game-bg);
-            border: 2px solid var(--ui-border);
-            color: var(--ui-accent);
-            font-family: var(--font-main);
+            padding: 10px;
+            background: var(--dark-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-light);
             font-size: 1em;
             outline: none;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            box-shadow: inset 0 0 5px rgba(0, 188, 212, 0.2);
+            transition: border-color 0.2s;
         }
 
         .input-group input:focus {
-            border-color: var(--ui-accent);
-            box-shadow: 0 0 10px var(--ui-accent), inset 0 0 5px var(--ui-accent);
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
         }
 
         button {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             margin-top: 15px;
-            background: var(--ui-accent);
-            color: var(--game-bg);
+            background: var(--primary-blue);
+            color: white;
             border: none;
-            font-family: var(--font-pixel);
-            font-weight: bold;
+            border-radius: 4px;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 700;
             cursor: pointer;
-            text-transform: uppercase;
-            box-shadow: 0 0 15px var(--ui-accent);
-            transition: background 0.3s, box-shadow 0.3s, transform 0.1s;
-            letter-spacing: 1px;
-            font-size: 0.9em;
+            transition: background 0.2s, box-shadow 0.2s;
         }
 
         button:hover {
-            background: #ff66b2; /* Um rosa mais claro */
-            box-shadow: 0 0 25px #ff66b2;
-            transform: scale(1.02);
+            background: #1976d2; /* Tom de azul mais escuro */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* Mensagem de Erro com Estilo de Jogo */
+        /* Mensagem de Erro Profissional (Modal/Overlay) */
         #error-overlay {
             display: none;
             position: absolute;
@@ -119,102 +105,69 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9); /* Fundo escuro */
-            backdrop-filter: blur(5px); /* Efeito de desfoque */
-            color: var(--error-color);
+            background: rgba(22, 27, 34, 0.95); /* Fundo semi-transparente */
+            color: var(--error-red);
             text-align: center;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
             padding: 20px;
-            box-shadow: 0 0 40px var(--error-color);
-            animation: errorGlitch 0.3s infinite alternate; /* Animação de glitch leve */
-            font-family: var(--font-main);
-            text-transform: uppercase;
-            border: 3px solid var(--error-color);
+            border-radius: 6px;
+            border: 2px solid var(--error-red);
+            animation: fadeInError 0.5s ease-out;
         }
         
+        @keyframes fadeInError {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         #error-overlay .error-title {
-            font-family: var(--font-pixel);
             font-size: 1.5em;
+            font-weight: 700;
             margin-bottom: 15px;
-            color: var(--error-color);
-            text-shadow: 0 0 10px var(--error-color);
         }
         
         #error-overlay p {
-            font-size: 1em;
+            font-size: 1.1em;
             line-height: 1.5;
-            margin-bottom: 10px;
+            color: var(--text-light);
         }
         
         #error-overlay .stolen-username {
-            font-family: var(--font-pixel);
-            font-size: 1.6em;
-            color: var(--ui-border);
-            text-shadow: 0 0 15px var(--ui-border);
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--error-red);
             margin-top: 10px;
-        }
-
-        /* Animação de Glitch mais sutil para o erro */
-        @keyframes errorGlitch {
-            0% { transform: skewX(0deg); opacity: 1; }
-            50% { transform: skewX(1deg); opacity: 0.98; }
-            100% { transform: skewX(-1deg); opacity: 1; }
-        }
-
-        /* Elementos de background para ambiente de jogo */
-        .background-lines {
-            position: absolute;
-            width: 150%;
-            height: 150%;
-            top: -25%;
-            left: -25%;
-            background-image: repeating-linear-gradient(
-                45deg,
-                rgba(0, 188, 212, 0.05) 0,
-                rgba(0, 188, 212, 0.05) 1px,
-                transparent 1px,
-                transparent 100px
-            );
-            animation: moveLines 60s linear infinite;
-            z-index: 1;
-        }
-
-        @keyframes moveLines {
-            from { transform: translate(0, 0); }
-            to { transform: translate(-100px, -100px); }
         }
     </style>
 </head>
 <body>
 
-    <div class="background-lines"></div>
-
     <div class="login-panel">
-        <h1>// NEXUS_LOGIN_PORTAL \\</h1>
+        <h1>LOGIN DE ACESSO</h1>
         
         <form id="loginForm">
             <div class="input-group">
-                <label for="username">NOME DE USUÁRIO</label>
-                <input type="text" id="username" required placeholder="DIGITE SEU ID DE JOGADOR">
+                <label for="username">NOME DE USUÁRIO / EMAIL</label>
+                <input type="text" id="username" required placeholder="Digite seu usuário ou e-mail">
             </div>
             
             <div class="input-group">
                 <label for="password">SENHA</label>
-                <input type="password" id="password" required placeholder="INSIRA SUA CHAVE SECRETA">
+                <input type="password" id="password" required placeholder="Insira sua senha">
             </div>
             
-            <button type="submit">INICIAR SESSÃO</button>
+            <button type="submit">Entrar</button>
         </form>
 
         <div id="error-overlay" style="display: none;">
-            <div class="error-title">ALERTA DE SEGURANÇA!</div>
-            <p>O SISTEMA DETECTOU UMA TENTATIVA DE INTRUSÃO.</p>
-            <p>ESTA SENHA NÃO PODE SER UTILIZADA, POIS PERTENCE AO USUÁRIO:</p>
-            <p class="stolen-username">LUISGAMEX</p>
-            <p style="margin-top: 20px; font-size: 0.8em; opacity: 0.7;">POR FAVOR, VERIFIQUE SUAS CREDENCIAIS.</p>
+            <div class="error-title">ERRO DE AUTENTICAÇÃO CRÍTICO</div>
+            <p>O SISTEMA DETECTOU UMA CHAVE DE SEGURANÇA INVÁLIDA.</p>
+            <p>Esta senha não pode ser utilizada, pois pertence ao usuário:</p>
+            <p class="stolen-username">@luisgamex</p>
+            <p style="margin-top: 20px; font-size: 0.9em; color: var(--text-muted);">Por favor, insira credenciais válidas e tente novamente.</p>
         </div>
     </div>
 
@@ -235,8 +188,8 @@
             setTimeout(() => {
                 errorOverlay.style.display = 'none';
                 loginForm.style.display = 'block';
-                usernameInput.value = ''; // Limpa o campo de usuário
-                passwordInput.value = ''; // Limpa o campo de senha
+                usernameInput.value = ''; // Limpa os campos
+                passwordInput.value = ''; 
             }, 5000); // Exibe a mensagem de erro por 5 segundos
         });
     </script>
