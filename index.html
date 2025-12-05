@@ -1,232 +1,37 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SISTEMA DE ACESSO CENTRALIZADO</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        /* RESET ESSENCIAL */
-        * {
-            box-sizing: border-box; 
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Variáveis de Tema (Preto/Vermelho) */
-        :root {
-            --primary-bg: #0d0d0d; /* Fundo Preto Profundo */
-            --card-bg: #1a1a1a; /* Card Preto Suave */
-            --primary-red: #d32f2f; /* Vermelho Principal */
-            --text-light: #f5f5f5; /* Texto Claro */
-            --text-muted: #999999; /* Texto Secundário */
-            --border-color: #333333;
-        }
-
-        /* Base e Tipografia */
-        body {
-            background-color: var(--primary-bg);
-            color: var(--text-light);
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: auto;
-        }
-
-        .login-panel {
-            width: 100%;
-            max-width: 420px;
-            padding: 30px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-top: 5px solid var(--primary-red); /* Linha superior de destaque em VERMELHO */
-            border-radius: 8px;
-            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.7);
-            position: relative;
-            z-index: 10;
-            margin: 20px; 
-        }
-
-        h1 {
-            text-align: center;
-            font-weight: 700;
-            font-size: 1.6em;
-            color: var(--text-light);
-            margin-bottom: 25px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-        }
-
-        /* Estilos de Formulário */
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 0.85em;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 10px;
-            background: var(--primary-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            color: var(--text-light);
-            font-size: 1em;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .input-group input:focus {
-            border-color: var(--primary-red);
-            box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.4);
-            background: var(--primary-bg);
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-            background: var(--primary-red);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        button:hover {
-            background: #b71c1c; 
-        }
-
-        /* MODAL DE ERRO - Estrutura Perfeitamente Alinhada */
-        #error-overlay {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(13, 13, 13, 0.95); /* Modal Preto Semi-transparente */
-            
-            /* CENTRALIZAÇÃO PERFEITA GARANTIDA PELO FLEX */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            
-            border-radius: 8px;
-            z-index: 20;
-        }
-        
-        /* Container interno para a mensagem (garante a estabilidade da mensagem) */
-        .error-message-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 90%; 
-            max-width: 320px;
-            padding: 25px;
-            border: 2px solid var(--primary-red);
-            background-color: var(--card-bg);
-            border-radius: 4px;
-            box-shadow: 0 0 10px rgba(211, 47, 47, 0.5); /* Sombra de alerta em VERMELHO */
-        }
-
-        .error-icon {
-            font-size: 2.5em;
-            color: var(--primary-red);
-            margin-bottom: 10px;
-        }
-
-        .error-title {
-            font-size: 1.2em;
-            font-weight: 700;
-            color: var(--text-light);
-            margin-bottom: 10px;
-            text-align: center; /* Garante que o título não distorça */
-        }
-        
-        #error-overlay p {
-            font-size: 0.9em;
-            line-height: 1.6; /* Melhor espaçamento para leitura */
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            text-align: center; /* Garante que os parágrafos estejam centralizados */
-        }
-        
-        .stolen-username {
-            font-size: 1.1em;
-            font-weight: 700;
-            color: var(--primary-red);
-            margin-top: 15px;
-            padding: 5px 10px;
-            background: rgba(211, 47, 47, 0.1); 
-            border-radius: 4px;
-        }
-    </style>
+    <title>Câmera 200x Zoom - Qualidade Inigualável</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <header class="hero">
+        <h1>Câmera Zoom 200x: Revele o Invisível.</h1>
+        <p>A mais alta qualidade de imagem, mesmo na maior ampliação.</p>
+        <a href="#demo" class="cta-button">Ver Demonstração</a>
+    </header>
 
-    <div class="login-panel">
-        <h1>PORTAL DE ACESSO SEGURO</h1>
-        
-        <form id="loginForm">
-            <div class="input-group">
-                <label for="username">NOME DE USUÁRIO OU CHAVE DE ACESSO</label>
-                <input type="text" id="username" required placeholder="Digite sua credencial principal">
+    <section id="demo" class="demo-section">
+        <h2>Zoom 200x em Ação</h2>
+        <div class="zoom-comparison">
+            <div class="image-box original">
+                <h3>Visão Padrão (0x)</h3>
+                <img src="placeholder_original.jpg" alt="Imagem original sem zoom">
             </div>
-            
-            <div class="input-group">
-                <label for="password">SENHA DE AUTENTICAÇÃO</label>
-                <input type="password" id="password" required placeholder="Insira a chave de segurança">
-            </div>
-            
-            <button type="submit">VALIDAR CREDENCIAIS</button>
-        </form>
-
-        <div id="error-overlay" style="display: none;">
-            <div class="error-message-box">
-                <div class="error-icon">🛑</div>
-                <div class="error-title">FALHA DE SEGURANÇA: CHAVE VINCULADA</div>
-                <p>O sistema rejeitou a autenticação (ID: 401). Esta chave de segurança (senha) está registrada.</p>
-                <p>Por motivos de **Segurança e Integridade de Dados**, esta senha pertence exclusivamente ao usuário:</p>
-                
-                <p class="stolen-username">@luisgamex</p>
-                
-                <p style="margin-top: 25px; font-size: 0.85em; color: var(--text-muted);">Tente novamente com sua credencial única ou contate o administrador.</p>
+            <div class="image-box zoomed">
+                <h3>Ampliado (200x)</h3>
+                <img src="placeholder_zoomed.jpg" alt="Imagem ampliada em 200x">
             </div>
         </div>
-    </div>
+        <p class="tech-note">Com o nosso sensor e processador de imagem avançados, a qualidade é mantida.</p>
+    </section>
 
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault(); 
-            
-            const errorOverlay = document.getElementById('error-overlay');
-            const loginForm = document.getElementById('loginForm');
-            const usernameInput = document.getElementById('username');
-            const passwordInput = document.getElementById('password');
-            
-            // Oculta o formulário e mostra o modal de erro
-            loginForm.style.display = 'none';
-            errorOverlay.style.display = 'flex';
-            
-            // Após 6 segundos, reverte
-            setTimeout(() => {
-                errorOverlay.style.display = 'none';
-                loginForm.style.display = 'block';
-                usernameInput.value = ''; 
-                passwordInput.value = ''; 
-            }, 6000); 
-        });
-    </script>
+    <footer>
+        <p>&copy; 2025 Câmera 200x. Todos os direitos reservados.</p>
+    </footer>
 
+    <script src="script.js"></script>
 </body>
 </html>
