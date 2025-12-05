@@ -1,0 +1,27 @@
+{
+  "name": "youtube-clone-interface",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "14.1.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "node-fetch": "3.3.2" 
+    /* 'node-fetch' é necessário para a Serverless Function (pages/api/search-vreden.js)
+      para fazer requisições HTTP para a API de terceiros.
+      Se você estiver usando uma versão mais recente do Next.js (14+),
+      você pode usar o 'fetch' nativo do Node.js, mas mantemos o 'node-fetch' 
+      para garantir compatibilidade em ambientes legados de Node.
+    */
+  },
+  "devDependencies": {
+    "eslint": "8.57.0",
+    "eslint-config-next": "14.1.0"
+  }
+}
