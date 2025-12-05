@@ -1,5 +1,6 @@
 // pages/index.js
 import { useState } from 'react';
+// Caminho correto: sobe um nível (..) e entra na pasta components
 import YouTubePlayer from '../components/YouTubePlayer';
 
 export default function YouTubeClone() {
@@ -14,74 +15,72 @@ export default function YouTubeClone() {
 
         setLoading(true);
         setError(null);
-        setCurrentVideo(null); // Limpa o vídeo atual
+        setCurrentVideo(null);
 
         try {
-            // Chama a sua função proxy no Vercel
+            // Chamada para o Proxy API Route no Vercel
             const response = await fetch(`/api/search-vreden?q=${encodeURIComponent(searchTerm)}`);
             const data = await response.json();
 
             if (data.error) {
                 setError(data.error);
             } else if (data.videoId) {
-                // Define o vídeo encontrado como o vídeo atual
                 setCurrentVideo(data);
             } else {
                 setError('Nenhum resultado de vídeo encontrado.');
             }
 
         } catch (err) {
-            console.error(err);
-            setError('Erro ao conectar com o serviço de busca.');
+            setError('Erro fatal ao processar a busca.');
         } finally {
             setLoading(false);
         }
     };
 
-    // Função auxiliar para formatar visualizações (ex: 2.2M)
     const formatViews = (views) => {
+        if (!views) return 'N/A';
         if (views >= 1000000) return (views / 1000000).toFixed(1) + 'M';
         if (views >= 1000) return (views / 1000).toFixed(1) + 'K';
         return views;
     };
 
     return (
-        <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+        <div style={{ padding: '20px', maxWidth: '900px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
             <h1>🎥 YouTube Clone Interface</h1>
             
-            <form onSubmit={handleSearch} style={{ marginBottom: '30px' }}>
+            <form onSubmit={handleSearch} style={{ marginBottom: '30px', display: 'flex', gap: '10px' }}>
                 <input
                     type="text"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Pesquisar vídeos..."
-                    style={{ padding: '10px', width: '80%', marginRight: '10px' }}
+                    placeholder="Pesquisar vídeos, ex: Happy Nation"
+                    style={{ padding: '10px', flexGrow: 1, border: '1px solid #ccc' }}
                 />
-                <button type="submit" disabled={loading}>
+                <button type="submit" disabled={loading} style={{ padding: '10px 20px', backgroundColor: '#FF0000', color: 'white', border: 'none', cursor: 'pointer' }}>
                     {loading ? 'Buscando...' : 'Buscar'}
                 </button>
             </form>
 
-            {error && <p style={{ color: 'red' }}>Erro: {error}</p>}
+            {error && <p style={{ color: 'red', fontWeight: 'bold' }}>⚠️ Erro: {error}</p>}
 
-            {/* Módulo Player */}
-            <div className="main-player" style={{ marginBottom: '20px' }}>
-                <YouTubePlayer videoId={currentVideo?.videoId} />
-            </div>
-
-            {/* Metadados do Vídeo */}
+            {/* Módulo Player e Metadados */}
             {currentVideo && (
-                <div className="video-metadata">
-                    <h2>{currentVideo.title}</h2>
-                    <p>
-                        **Canal:** {currentVideo.channel} | **Visualizações:** {formatViews(currentVideo.views)}
-                    </p>
-                    {/* Exibe o link de download, se existir, com o devido aviso */}
-                    {currentVideo.downloadUrl && (
-                        <p style={{ color: '#888', fontSize: '0.9em' }}>
-                            * Link de Download direto: <a href={currentVideo.downloadUrl} target="_blank" rel="noopener noreferrer">MP4</a> (Use com cautela e sob sua responsabilidade, devido a direitos autorais).
+                <div className="video-content">
+                    {/* Player */}
+                    <div className="main-player" style={{ marginBottom: '15px' }}>
+                        <YouTubePlayer videoId={currentVideo.videoId} />
+                    </div>
+
+                    {/* Metadados */}
+                    <div className="video-metadata">
+                        <h2>{currentVideo.title}</h2>
+                        <p style={{ color: '#555' }}>
+                            **Canal:** {currentVideo.channel} | **Visualizações:** {formatViews(currentVideo.views)}
                         </p>
-                    )}
+                        <p style={{ fontSize: '0.8em', color: 'orange' }}>
+                            * Aviso: Este site usa uma API de terceiros. A qualidade dos dados pode variar.
+                        </p>
+                    </div>
                 </div>
             )}
         </div>
