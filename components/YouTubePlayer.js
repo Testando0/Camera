@@ -2,19 +2,26 @@
 import { useEffect, useRef, useState } from 'react';
 
 const YouTubePlayer = ({ videoId }) => {
+    // Usamos refs e state para garantir que o player seja carregado corretamente no DOM
     const playerRef = useRef(null);
     const [player, setPlayer] = useState(null);
 
-    // 1. Função para inicializar o player após o script do YouTube carregar
+    // Função para inicializar o player.
     const initializePlayer = () => {
         if (window.YT && playerRef.current) {
-            const newPlayer = new window.YT.Player(playerRef.current, {
+            // Cria a div que o player usará se ela não existir
+            if (!document.getElementById(`Youtubeer-${videoId}`)) {
+                 const div = document.createElement('div');
+                 div.setAttribute('id', `Youtubeer-${videoId}`);
+                 playerRef.current.appendChild(div);
+            }
+            
+            // Instancia o player
+            const newPlayer = new window.YT.Player(`Youtubeer-${videoId}`, {
+                height: '390',
+                width: '640',
                 videoId: videoId,
-                playerVars: {
-                    autoplay: 1, // Inicia automaticamente
-                    controls: 1, // Mostra os controles
-                    modestbranding: 1, // Oculta o logo do YouTube na barra de controle
-                },
+                playerVars: { autoplay: 1, controls: 1, modestbranding: 1 },
                 events: {
                     onReady: (event) => event.target.playVideo(),
                 },
@@ -23,46 +30,30 @@ const YouTubePlayer = ({ videoId }) => {
         }
     };
 
-    // 2. Carrega o script da API do IFrame do YouTube uma única vez
+    // Efeito para carregar o script da API do Player apenas uma vez
     useEffect(() => {
         if (!window.YT) {
             const tag = document.createElement('script');
             tag.src = "https://www.youtube.com/iframe_api";
-            // O nome desta função é obrigatório pela API do YouTube
             window.onYouTubeIframeAPIReady = initializePlayer; 
             const firstScriptTag = document.getElementsByTagName('script')[0];
             firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        } else {
-            // Se o script já estiver carregado, apenas inicializa
+        } else if (videoId) {
             initializePlayer();
         }
-        
-        // Limpeza (opcional, mas boa prática)
-        return () => {
-            if (player) {
-                player.destroy();
-            }
-        };
-    }, []); // Array de dependência vazio garante que só executa uma vez
+    }, []);
 
-    // 3. Atualiza o player quando a videoId muda
+    // Efeito para carregar um novo vídeo ID (videoId) quando ele muda
     useEffect(() => {
         if (player && videoId) {
-            // Se o player existir, apenas carrega o novo vídeo
             player.loadVideoById(videoId);
         }
     }, [videoId, player]);
 
 
     return (
-        // O ref é usado para injetar a div de visualização do player
-        <div 
-            ref={playerRef} 
-            id="youtube-player" 
-            className="youtube-player-container"
-            style={{ width: '100%', aspectRatio: '16/9' }} 
-        >
-            {!videoId && <p>Pesquise e selecione um vídeo.</p>}
+        <div ref={playerRef} id="player-container" style={{ width: '100%', aspectRatio: '16/9' }}>
+            {!videoId && <p>Pesquise um vídeo para começar.</p>}
         </div>
     );
 };
